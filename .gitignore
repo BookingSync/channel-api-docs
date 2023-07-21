@@ -1,0 +1,6 @@
+.powrc
+output/
+tmp/
+.DS_Store
+crash.log
+.ruby-gemset

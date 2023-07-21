@@ -1,0 +1,10 @@
+{
+  "messages": [
+    {
+      "origin": "email",
+      "visibility": "external",
+      "channel": "email",
+      "attachment_ids": [1,3,6]
+    }
+  ]
+}

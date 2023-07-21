@@ -1,0 +1,10 @@
+{
+  "special_offers": [
+    {
+      "name_en": "Special offer for 1",
+      "start_date": "START_DATE",
+      "end_date": "END_DATE",
+      "discount": 10
+    }
+  ]
+}

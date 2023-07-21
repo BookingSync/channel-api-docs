@@ -1,0 +1,25 @@
+{
+  "links": {
+    "rates.rental": "https://www.bookingsync.com/api/v3/rentals/{rates.rental}"
+  },
+  "rates": [
+    {
+      "links": {
+        "rental": 14
+      },
+      "id": 2,
+      "currency":"EUR",
+      "start_date": "START_DATE",
+      "end_date": "END_DATE",
+      "initial_nightly_rate": "100.0",
+      "initial_weekly_rate": "700.0",
+      "initial_monthly_rate": "3000.0",
+      "final_nightly_rate": "100.0",
+      "final_weekly_rate": "650.0",
+      "final_monthly_rate": "2500.0",
+      "minimum_stay": 7,
+      "created_at": "CREATED_AT",
+      "updated_at": "UPDATED_AT"
+    }
+  ]
+}

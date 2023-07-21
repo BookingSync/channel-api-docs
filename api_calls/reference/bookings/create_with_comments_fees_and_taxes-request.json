@@ -1,0 +1,28 @@
+{
+  "bookings": [
+    {
+      "booked": true,
+      "client_id": 37,
+      "adults": 5,
+      "currency": "USD",
+      "discount": "10%",
+      "final_price": "2930.0",
+      "initial_price": "3000.0",
+      "start_at": "START_AT",
+      "end_at": "END_AT",
+      "comments": [
+        { "content": "Comment one" },
+        { "content": "Comment two" }
+      ],
+      "bookings_fees": [
+        { "price": "50", "times_booked": "2", "rentals_fee_id": "10", "name": "Fee1" },
+        { "price": "30", "times_booked": "1", "rentals_fee_id": "10", "name": "Fee2" }
+      ],
+      "bookings_taxes": [
+        { "taxable_type": "Rental", "taxable_id": "1", "amount": "60", "percentage": "10.0", "tax_id": "5", "included": false, "name": "Tax1"},
+        { "taxable_type": "Rental", "taxable_id": "1", "amount": "40", "tax_id": "7", "included": false, "name": "Tax2" },
+        { "taxable_type": "Rental", "taxable_id": "1", "amount": "10", "tax_id": "4", "included": true, "name": "Tax3" }
+      ]
+    }
+  ]
+}

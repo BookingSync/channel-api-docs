@@ -1,0 +1,24 @@
+{
+  "destinations": [
+    {
+      "id": 3212,
+      "name": {
+        "en": "Europe"
+      },
+      "fullname": {
+        "en": "Europe, World"
+      },
+      "permalink": {
+        "en": "world/europe"
+      },
+      "aliases": {
+      },
+      "counter":1,
+      "ancestor_ids": [
+        1
+      ]
+    }
+  ],
+  "meta": {
+  }
+}

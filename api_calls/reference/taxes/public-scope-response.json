@@ -1,0 +1,21 @@
+{
+  "links": {
+    "taxes.account": "http://www.bookingsync.com/api/v3/accounts/{taxes.account}"
+  },
+  "taxes": [
+    {
+      "links": {
+        "account": 1
+      },
+      "id": 4,
+      "percentage": "10.0",
+      "created_at": "CREATED_AT",
+      "updated_at": "UPDATED_AT",
+      "start_date": "START_DATE",
+      "end_date": "END_DATE",
+      "name": {
+        "en": "Tax"
+      }
+    }
+  ]
+}

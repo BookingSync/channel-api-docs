@@ -1,0 +1,47 @@
+{
+  "links": {
+    "payments.account": "https://www.bookingsync.com/api/v3/accounts/{payments.account}",
+    "payments.bookings": "https://www.bookingsync.com/api/v3/bookings/{payments.bookings}",
+    "payments.bookings_payments": "https://www.bookingsync.com/api/v3/bookings_payments/{payments.bookings_payments}"
+  },
+  "payments": [
+    {
+      "links": {
+        "account": 33,
+        "bookings": [
+          21
+        ],
+        "bookings_payments": [
+          3
+        ]
+      },
+      "id": 2,
+      "transaction_id": null,
+      "order_id": null,
+      "card": null,
+      "amount_in_cents": 100000,
+      "currency": "USD",
+      "kind": "cash",
+      "fullname": "John Doe",
+      "email": "john@example.com",
+      "locale": "en",
+      "ip": "192.0.2.1",
+      "test": null,
+      "notes": null,
+      "paid_at": "CREATED_AT",
+      "created_at": "CREATED_AT",
+      "updated_at": "UPDATED_AT",
+      "rejected_at": null,
+      "canceled_at": null,
+      "description": "Payment for Awesome Rental from Friday 01 Jun 2017, 04:00 PM to Friday 8 Jun 2017, 10:00 AM",
+      "address1": "Bernhard Creek",
+      "address2": null,
+      "zip": "07671-8254",
+      "city": "East Winifred",
+      "state": "Monatana",
+      "country_code": "US",
+      "forget_me_at": null,
+      "processing_restricted_at": null
+    }
+  ]
+}
