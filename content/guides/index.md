@@ -1,3 +1,3 @@
 # Guides and Tutorials
 
-Welcome to BookingSync Сhannel API guides!
+Welcome to Smily Сhannel API guides!

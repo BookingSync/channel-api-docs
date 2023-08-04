@@ -1,17 +1,19 @@
-# Create a booking and handle payment on partner's side
+# Booking and Payment Handling
 
 1. TOC
 {:toc}
 
 ## Preface
 
-There are 2 ways of handling payments: using Smily payment gateway or process payment on partner side. This document explains second option - how to handle payments on partner's side.
+This document outlines the process of handling payments on the partner's side. While we offer the option to use the Smily payment gateway, this guide focuses on managing payments directly through the partner's infrastructure.
 
-## Create a quote
+## Quote creation
 
-Before creating a booking, you have to confirm the price and availability of rental. To do that, you have to create a quote.
+Before proceeding with booking creation, it's necessary to confirm rental price and availability by generating a quote.
 
 ~~~ruby
+require 'excon'
+
 token = "<YOUR_TOKEN>"
 api_url = "<API_URL>"
 media_type = "application/vnd.api+json"
@@ -46,17 +48,17 @@ json = JSON.parse(response.body)
 if response.status == 201
   price = json["data"]["attributes"]["final-price"]
   booking_url = json["data"]["attributes"]["booking-url"]
-  # Now you can create booking via API or redirect user to booking_url
+  # Proceed to booking creation via API or redirect user to booking_url
 else
   handle_errors(json)
 end
 ~~~
 
-## Create a booking
+## Booking creation
 
-Once you have successfully created a Quote, you can make a booking request. To do that you have to provide all information about the client, dates, rental ID and price.
+Once a successful quote is obtained, initiate a booking request by providing client details, rental information, and pricing.
 
-> Price should not be less than `final-price` you got from Quote request
+> Note: Ensure that the provided price matches or higher than `final-price` from the quote.
 
 ~~~ruby
 token = "<YOUR_TOKEN>"
@@ -68,7 +70,7 @@ options = {
     "Accept" => media_type,
     "Content-Type" => media_type,
     "Authorization" => "Bearer #{token}",
-    "Idempotency-Key" => get_order_uuid # optional but useful header, read comments below
+    "Idempotency-Key" => get_order_uuid # Use a unique ID for idempotency
   }
 }
 
@@ -89,7 +91,7 @@ payload = {
       "client-phone-number": "123123123",
       "client-country-code": "US"
     },
-    type: "quotes"
+    type: "bookings"
   }
 }
 response = request.request({
@@ -100,21 +102,21 @@ response = request.request({
 json = JSON.parse(response.body)
 if response.status == 201
   booking_id = json["data"]["id"]
-  # save this booking id
+  # Save the booking ID for future reference
 else
   handle_errors(json)
 end
 ~~~
 
-TODO: confirm it
-If created booking has field `tentative-expires-at`, it means it could be canceled automatically if you won't create any payment. So, as a next step, we have to create payments.
+> **Note:** If a created booking includes the not null `tentative-expires-at` field, it may be automatically canceled if no payment is made. Therefore, it's essential to proceed with payment creation.
 
-We recommend to always set `Idempotency-Key` header. This header allow to avoid duplicates creation. For example if you tried to create a booking and because of network connection or some other error you could not get response, you can safely retry your request and get the correct response, because for a given key, every success response will be cached for 6 hours.
-We recommend to generate UUID for each order and use it in `Idempotency-Key` header.
+We strongly recommend setting the `Idempotency-Key` header to prevent duplicate creations. Generate a UUID for each order and use it as the `Idempotency-Key`.
 
-## Create a payment
+For example, if you attempt to create a booking but encounter a network connection issue or another error that prevents you from receiving a response, you can safely retry your request. This is possible because, for a specific key, each successful response will be cached for a 6 hours.
 
-When you handled payment for the booking, you have to notify our us about that. Otherwise booking could be canceled.
+## Payment creation
+
+Once payment for the booking is processed, notify us to prevent booking cancellation.
 
 ~~~ruby
 token = "<YOUR_TOKEN>"
@@ -126,7 +128,7 @@ options = {
     "Accept" => media_type,
     "Content-Type" => media_type,
     "Authorization" => "Bearer #{token}",
-    "Idempotency-Key" => get_payment_uuid # optional but useful header, read comments below
+    "Idempotency-Key" => get_payment_uuid # Use a unique ID for idempotency
   }
 }
 
@@ -151,10 +153,10 @@ response = request.request({
 json = JSON.parse(response.body)
 if response.status == 201
   booking_id = json["data"]["id"]
-  # save this booking id
+  # Save the payment ID for reference
 else
   handle_errors(json)
 end
 ~~~
 
-Payments endpoint also support `Idempotency-Key` header. To ensure idempotent writes and frictionless integration, it is highly recommended to provide `Idempotency-Key` header. For a given key, every success response will be cached for 6 hours. Thanks to that, you can safely retry write operation.
+> **Note:** Payments endpoint also support `Idempotency-Key` header. To ensure idempotent writes and frictionless integration, it is highly recommended to provide `Idempotency-Key` header. For a given key, every success response will be cached for 6 hours. Thanks to that, you can safely retry write operation.

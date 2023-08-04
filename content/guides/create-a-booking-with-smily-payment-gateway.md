@@ -1,15 +1,17 @@
-# Create a booking and handle payments with Smily payment gateway
+# Create a Booking and Handle Payments with Smily Payment Gateway
 
 1. TOC
 {:toc}
 
 ## Preface
 
-There are 2 ways of handling payments: using Smily payment gateway or process payment on partner side. This document explains first option - how to handle payments with Smily payment gateway.
+This guide will walk you through the process of creating bookings and handling payments using the Smily payment gateway. By integrating with our API, you can seamlessly manage bookings and offer a secure payment experience to your users.
 
 ## Create a quote
 
-Before creating a booking, you have to confirm the price and availability of rental. To do that, you have to create a quote.
+Before creating a booking, you need to confirm the price and availability of the rental. To do this, you must create a quote by making a `POST` request to the `/api/ota/v1/quotes` endpoint.
+
+## Code example in Ruby
 
 ~~~ruby
 token = "<YOUR_TOKEN>"
@@ -52,4 +54,4 @@ else
 end
 ~~~
 
-If you don't have own payment gateway, you can just redirect user to `booking_url`. That's it :)
+After successfully creating a quote, simply redirect the user to the provided `booking-url`. This will take them to the Smily Payment Gateway's payment page, where they can complete the payment and finalize the booking.

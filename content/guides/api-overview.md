@@ -5,36 +5,71 @@
 
 ## What is Smily Channel API?
 
-Channel API allows you to sync Smily properties to your own website (aka Channel). You can choose which properties or accounts to display or not, get rentals availabilities, book rentals and collect payments.
+The channel API helps channel partners to integrate with our API by providing “shortcuts” so that partners can pull off the required data they need without having to combine too many requests from our API.
 
 ## Who is Smily Channel API for?
 
-TODO
+The Smily Channel API is designed to be useful for a variety of platforms. It's particularly valuable for:
+
+  - **Online Travel Agencies (OTAs)**
+  - **Marketplaces**
+  - **Tour Operators**
+  - **Niche Channels**
+
+**Create Your Own Portal:** Additionally, the Smily offers the flexibility to build entire Marketplaces or Niche Channels according to your vision. Explore this capability further on our [Your Own Portal](https://www.smily.com/en/your-own-portal) page.
 
 ## Why would I use Smily Channel API?
 
-This API was developed to make integration with our partners easier. If you want to look at all features of our system, please refer to [BookingSync Universe API ](https://developers.bookingsync.com/).
+The Smily Channel API presents an optimal way to easily onboard new properties onto your system. Designed with our partners in mind, this API simplifies the integration journey.
+
+It's important to highlight that our more extensive feature set is available through the [BookingSync Universe API ](https://developers.bookingsync.com/). While the Smily Channel API offers speedy integration, unlocking the full range of features in the BookingSync Universe API might take more time and expertise from skilled engineers.
+
+In essence, the Smily Channel API provides a straightforward and speedy integration, while the BookingSync Universe API offers a wider range of features that require more time and technical know-how.
 
 ## How the Smily Channel API works?
 
-In general, there are 3 steps you have to do:
+The Smily Channel API is designed to synchronize account data, rentals, and facilitate bookings between Smily Channel and our partners’ platforms. Below is a detailed step-by-step guide on how to utilize our API for a seamless synchronization process.
 
-  1. Manage accounts that are ready to publish their listings on your website - regularly refresh the list and onboard them.
-  2. Manage rentals of onboarded accounts - regularly refresh descriptions, prices and availabilities.
-  3. Manage bookings. This step depends on how you want to process the payments - on your side, or on our side.
+### 1. Fetching Accounts
 
+The first step to integration is to fetch the list of accounts interested in publishing their listings on your platform. You can do this by making a GET request to the `/accounts` endpoint. It’s recommended to perform this operation regularly to keep the accounts data up-to-date.
 
-The API is fully [JSONAPI 1.0 compliant](http://jsonapi.org).
+### 2. Accounts Onboarding
 
-1. Get accounts
-2. approve/reject them
-3. sign contracts/register/oboarding/etc
-4. get rentals of approved accounts
-  4.1 Get rentals info (refresh once a day)
-  4.2 Get rentals availabilities (refresh every hour)
-  4.3 Get rentals prices (every 12 hours)
-  4.4 Remove unpublished rentals
-5. Booking creation:
-  5.1 Create quote to confirm price and availability.
-  5.2 Create booking with price not less than in quote response
-  5.4 Create payment to confirm booking
+After fetching the accounts, the next step is to onboard them. This process involves signing contracts, registering them in your system, and performing any other necessary setup operations.
+
+### 3. Fetching Rental Information
+
+Once the accounts are onboarded, it’s time to fetch their associated rentals. This process happens in several stages:
+
+  **3.1 Fetching Base Rental Information**
+
+First, fetch the base information of the rentals by making a GET request to the `/rentals` endpoint. This includes details like descriptions, tags, amenities, etc. It is advised to refresh this information once a day to keep it up-to-date.
+
+  **3.2 Fetching Rental Availabilities**
+
+The next step is to fetch the availability status of these rentals. You can do this by making an GET request to the `/rentals` endpoint. It's recommended to refresh availability data every hour.
+
+  **3.3 Fetching Rental Prices**
+
+Fetch the prices of the rentals by making a GET request to the `/api/ota/v1/los-record-export-urls` endpoint. We update prices every 12 hours, no sense to update it more often.
+
+  **3.4 Unpublished Rentals**
+
+Lastly, it’s crucial to remove any rentals that are no longer available. If a rental is unpublished from the Smily Channel, be sure to reflect this change in your system to avoid booking unavailable rentals.
+
+### 4. Booking Creation
+
+When a customer makes a booking request on your platform, the following steps need to be followed:
+
+  **4.1 Create a Quote**
+
+First, confirm the price and availability of the chosen rental by creating a quote. You can do this by making a POST request to the `/quotes` endpoint. The response will provide you with the confirmed price and availability status.
+
+  **4.2 Create a Booking**
+
+If the rental is available, proceed to create a booking. Make a POST request to the `/bookings` endpoint with a price not less than the one provided in the quote response.
+
+  **4.3 Confirm Booking with Payment**
+
+Lastly, confirm the booking by making a payment. You can do this by sending a POST request to the `/payments` endpoint. This final step ensures the booking is confirmed and the rental is successfully reserved for the customer.

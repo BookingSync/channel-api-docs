@@ -3,44 +3,49 @@
 1. TOC
 {:toc}
 
-## Preface
+## Overview
 
-These instruction describe how to make your first API call using cURL. Before you start using the API, your need to do the following:
+This guide provides step-by-step instructions for making your first API call using cURL, along with examples in different programming languages.
 
-  1. Request a demo account from [Smily Partners Team](mailto:partners@smily.com)
-  2. Get an **API Key** and **host** [Smily Partners Team](mailto:partners@smily.com)
-  3. Make sure you have [curl](https://curl.haxx.se/) installed on your machine :)
+## Prerequisites
 
-## Build your API call
+Before you start using the API, complete the following steps:
 
-Your API call must have the following components:
+  1. **Request a Demo Account**: Begin by requesting a demo account from the [Smily Partners Team](mailto:partners@smily.com). This account will grant you access to the API.
+  2. **Get an API Key and Host details**: Obtain your API Key and host details from the [Smily Partners Team](mailto:partners@smily.com). These credentials are essential for authentication and making API requests.
+  3. **Install cURL**: Ensure that you have [curl](https://curl.haxx.se/) installed on your machine :)
 
-  - **A host.** The host will be provided by our support and will look like `https://<NAME>.platforms.bookingsync.com`.
-  - **An Authorization header.** An API Key must be included in the Authorization header.
-  - **An Accept header.** `Accept` header should always be equal `application/vnd.api+json`.
-  - **A request.** When submitting data to a resource via POST or PUT, you must submit your payload in JSON.
+## Making Your First API Call
 
+Your API call should include the following components:
 
-## Make your first call to Smily Channel API
+  - **Host:** Provided by our support team, the host will look like `https://<NAME>.platforms.bookingsync.com`.
+  - **Authorization Header:** Include your API Key in the Authorization header for authentication.
+  - **Accept header:** Set the `Accept` header to `application/vnd.api+json` to indicate the desired response format.
+  - **Request:** When sending data via POST or PUT, format your payload as JSON.
 
-As a first API call, let's get all [accounts](https://demo.platforms.bookingsync.com/api-docs/index.html), who wants to publish their listings on your website:
+## Sample cURL Request
+
+Copy the following cURL example to make your first API call, which retrieves all [accounts](https://demo.platforms.bookingsync.com/api-docs/index.html) interested in publishing listings on your website:
 
 ~~~bash
 curl -i -X 'GET' '<HOST>/api/ota/v1/accounts' -H 'accept: application/vnd.api+json' -H 'Authorization: Bearer <API_KEY>'
 ~~~
 
-  1. Copy the curl example above.
+  1. Copy the cURL example above.
   2. Paste the curl call into your favorite text editor.
-  3. Copy your **API KEY** and paste it in the "Authorization" header.
-  4. Copy your **HOST** and paste it in the url.
-  5. Copy the code and paste it in your terminal.
-  6. Hit **Enter**.
-  7. **HTTP/2 200** at the top of response means you did everything correct!
+  3. Replace **<API_KEY>** with your actual API key and **<HOST>** with your host details.
+  4. Copy the updated cURL command and paste it into your terminal.
+  5. Press **Enter** to execute the request.
+  6. A successful response with status **HTTP/2 200** indicates correct setup.
 
+## Code Examples in Ruby
 
-Test code in Ruby with [Excon](https://github.com/excon/excon) library:
+### Using [Excon](https://github.com/excon/excon) Library
 
 ~~~ruby
+require 'excon'
+
 token = "<YOUR_TOKEN>"
 api_url = "<API_URL>"
 media_type = "application/vnd.api+json"
@@ -58,9 +63,11 @@ response = request.request({ method: :get })
 response.status
 ~~~
 
-Test code in Ruby with [Faraday](https://github.com/lostisland/faraday) library:
+Using [Faraday](https://github.com/lostisland/faraday) Library
 
 ~~~ruby
+require 'faraday'
+
 token = "<YOUR_TOKEN>"
 api_url = "<API_URL>"
 media_type = "application/vnd.api+json"
@@ -78,6 +85,83 @@ response = request.send(:get, "/api/ota/v1/accounts")
 response.status
 ~~~
 
-## API response messages
+## Code example in Java
 
-All responses are returned in JSON format. We specify this by sending the `Content-Type` header. You can find detailed responses specification in [Swagger documentation](https://demo.platforms.bookingsync.com/api-docs/index.html)
+~~~java
+import java.io.IOException;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
+
+public class SmilyChannelApiExample {
+
+    public static void main(String[] args) throws IOException {
+        String token = "<YOUR_TOKEN>";
+        String apiURL = "<API_URL>";
+        String mediaType = "application/vnd.api+json";
+
+        OkHttpClient client = new OkHttpClient();
+
+        Request request = new Request.Builder()
+                .url(apiURL + "/api/ota/v1/accounts")
+                .addHeader("User-Agent", "Api client")
+                .addHeader("Accept", mediaType)
+                .addHeader("Content-Type", mediaType)
+                .addHeader("Authorization", "Bearer " + token)
+                .build();
+
+        Response response = client.newCall(request).execute();
+        int statusCode = response.code();
+
+        System.out.println("Response Status Code: " + statusCode);
+
+        // You can further process the response body here if needed
+        String responseBody = response.body().string();
+        System.out.println("Response Body: " + responseBody);
+    }
+}
+~~~
+
+Remember to replace `<YOUR_TOKEN>` and `<API_URL>` with your actual API token and URL. This Java code uses the OkHttp library to make HTTP requests, similar to how Excon and Faraday were used in the Ruby examples.
+
+Make sure you have the OkHttp library added to your Java project's dependencies.
+
+Feel free to adapt this Java code to your project's structure and error handling needs. This example demonstrates making a GET request, and you can build upon it for other types of requests as well.
+
+## Code example in Python
+
+~~~python
+import requests
+
+token = "<YOUR_TOKEN>"
+api_url = "<API_URL>"
+media_type = "application/vnd.api+json"
+
+headers = {
+    "User-Agent": "Api client",
+    "Accept": media_type,
+    "Content-Type": media_type,
+    "Authorization": f"Bearer {token}"
+}
+
+response = requests.get(f"{api_url}/api/ota/v1/accounts", headers=headers)
+status_code = response.status_code
+
+print(f"Response Status Code: {status_code}")
+
+# You can further process the response content here if needed
+response_content = response.content
+print(f"Response Content: {response_content}")
+~~~
+
+Replace `<YOUR_TOKEN>` and `<API_URL>` with your actual API token and URL. This Python code uses the requests library to make HTTP requests, similar to how the Ruby examples used Excon and Faraday.
+
+Make sure you have the `requests` library installed in your Python environment:
+
+~~~bash
+pip install requests
+~~~
+
+## Understanding API Responses
+
+All responses are returned in JSON format. The Content-Type header specifies the format. For detailed response specifications, refer to the [Swagger documentation](https://demo.platforms.bookingsync.com/api-docs/index.html)

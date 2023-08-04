@@ -5,16 +5,15 @@
 
 ## Preface
 
-Once you onboarded accounts, you can start import their rentals.
+After successfully onboarding accounts, you can initiate the process to import their rentals into your system.
 
-## Get rentals base information
+## Getting Basic Rental Information
 
-You can find detailed specification in [Swagger documentation](https://demo.platforms.bookingsync.com/api-docs/index.html)
+For detailed specifications and endpoint details, refer to the [Swagger documentation](https://demo.platforms.bookingsync.com/api-docs/index.html)
 
-> We suggest to refresh rentals base information once a day
+> Recommendation: We advise refreshing rental base information once a day
 
-
-TODO: REMOVE disable_rentals
+## Code Example in Ruby
 
 ~~~ruby
 token = "<YOUR_TOKEN>"
@@ -30,7 +29,6 @@ options = {
 }
 
 Account.approved.each do |account|
-  account_rentals_ids = Rental.for_account(account).pluck(:id)
   page_number = 1
   while true do
     request = Excon.new(URI.join(api_url, "/api/ota/v1/rentals?page[number]=#{page_number}&page[size]=50&filter[account-id]=#{account.id}").to_s, options)
@@ -42,26 +40,21 @@ Account.approved.each do |account|
       import_rental(rental)
     end
 
-    account_rentals_ids -= json["data"].pluck("id").map(&:to_i)
-
     break if page_number >= json["meta"]["pagination"]["pages"].to_i
     page_number++
   end
-
-  disable_rentals(account_rentals_ids)
 end
 ~~~
 
-## Get rentals availabilities
+## Fetching Rental Availabilities
 
-Availability is a just a field (see [Rental Schema](https://demo.platforms.bookingsync.com/api-docs/index.html)).
-But it makes sense to sync availabilities more often than other information.
+Availability is a just a rental field (see [Rental Schema](https://demo.platforms.bookingsync.com/api-docs/index.html)). But it makes sense to sync availabilities more often than other information.
 
-> We suggest to refresh rentals availabilities every hour
+> Recommendation: We suggest refreshing rental availabilities every hour.
 
-The best practice here would be to set the parameter `fields`. It allows to fetch only required fields, in our case `availability`. We also recommend to disable rentals during availabilities update.
+To optimize the retrieval process, it's recommended to use the fields parameter when fetching rental data. By specifying `fields[rentals]=availability`, you can streamline the API response to include only the necessary availability information, improving efficiency.
 
-TODO: choose approach 1 or approach 2
+<!-- TODO: choose approach 1 or approach 2 -->
 
 <!-- Approach 1: Fetch batches. No beautiful, but more effective -->
 ~~~ruby
@@ -128,7 +121,7 @@ end
 
 ## Understanding availabilities
 
-The regular availability object looks like:
+The regular availability object consists of a map field, which contains statuses for the next 1096 days starting from the `start-date`. A status of '0' indicates availability, while '1' indicates unavailability.
 
 ~~~ruby
 {
@@ -138,11 +131,7 @@ The regular availability object looks like:
 }
 ~~~
 
-It has a `map` with statuses for the next 1096 days starting starting from the date indicated by `start-date`. '0' means available, '1' means unavailable.
-
 Scope for ActiveRecord rental model could look like (assuming you are using Postgres and named `availability[map]` as `availability_map` and `availability[start_date]` as `availability_start_date`):
-
-TODO: add raw SQL
 
 ~~~ruby
   scope :by_availabilities, ->(date, length) {
@@ -153,15 +142,30 @@ TODO: add raw SQL
   }
 ~~~
 
-## Get rentals prices
+**SQL Example:**
+
+~~~sql
+SELECT r.id
+FROM rentals r
+WHERE
+  SUBSTRING(r.availability_map,
+            DATE_PART('day', TIMESTAMP '2023-07-01' - r.availability_start_date)::integer + 1,
+            7)
+  NOT SIMILAR TO '1';
+~~~
+
+`2023-07-01` - is a sample start date, `7` is a sample length of stay.
+
+
+## Fetching Rental Prices
 
 Before we start, please read an article [Understanding LOS Records](https://developers.bookingsync.com/guides/understanding-los-records/). It explains what is LOS records and how it works.
 We generate LOS records for the next 18 months, starting from yesterday.
 
-To get rental prices better to use `/api/ota/v1/los-record-export-urls` endpoint. It will return a list of CSV files with LOS records for rentals. CSV files will look like:
+> Attention! `/los-records` is for debugging purposes only! Please don't use it in production mode!
 
-
-> /los-records for debug only! Don't use it!
+To fetch rental prices, it is recommended to use `/api/ota/v1/los-record-export-urls` endpoint. This endpoint provides CSV files containing LOS records for rentals.
+CSV files look like:
 
 ~~~bash
 id;account_id;rental_id;currency;min_occupancy;max_occupancy;kind;day;rates
@@ -179,30 +183,29 @@ There are 3 kinds of LOS records ([LOS kinds](https://developers.bookingsync.com
   3. **final_price** - Price including all required fees and taxes.
 
 If you want to avoid price discrepancy, you have to use **rental_price** and apply all the fees and taxes on your side. Otherwise just use **final_price**.
-TODO: EXPLAIN search price and booking price difference
+Read more about [difference between rental price and final price](/guides/difference-between-rental-price-and-final-price/).
 
-> We update LOS files every 12 hours.
+> Recommendation: We update LOS files every 12 hours.
 
-## Filter rentals by price
+## Filtering Rentals by Price
 
-We suggest to create a table for LOS records and import prices from CSV files into this table.
-
-TODO: add raw SQL
+To effectively filter rentals by price, consider creating a table for LOS records and importing prices from CSV files into this table. We suggest the following table structure:
 
 ~~~sql
-  create_table "eur_los_records", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
-    t.bigint "synced_id", null: false
-    t.date "day", null: false
-    t.integer "min_occupancy"
-    t.integer "max_occupancy"
-    t.bigint "rental_id", null: false
-    t.decimal "rates_eur", default: [], array: true
-    t.string "kind"
-    t.bigint "account_id"
-    t.index ["account_id", "day", "rental_id"], name: "index_elr_on_rental_account_day_rental"
-    t.index ["rental_id", "account_id", "day"], name: "index_elr_on_day_rental_account"
-  end
+CREATE TABLE public.eur_los_records_v5 (
+    id uuid DEFAULT public.gen_random_uuid() NOT NULL,
+    synced_id bigint NOT NULL,
+    day date NOT NULL,
+    min_occupancy integer,
+    max_occupancy integer,
+    synced_rental_id bigint NOT NULL,
+    rates_eur numeric[] DEFAULT '{}'::numeric[],
+    kind character varying,
+    synced_account_id bigint
+);
 ~~~
+
+**Sample ActiveRecord model for EUR LOS records**
 
 ~~~ruby
 class EurLosRecord < ApplicationRecord
@@ -236,7 +239,7 @@ class EurLosRecord < ApplicationRecord
 end
 ~~~
 
-In controller you can use this scope like:
+In controller you can use this scope to filter rentals:
 
 ~~~ruby
   # `by_availabilities` scope was described above
