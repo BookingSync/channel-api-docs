@@ -13,11 +13,23 @@ For detailed specifications and endpoint details, refer to the [Swagger document
 
 > Recommendation: We advise refreshing rental base information once a day
 
-## Code Example in Ruby
+### Code Examples
 
-~~~ruby
-token = "<YOUR_TOKEN>"
-api_url = "<API_URL>"
+| cURL | Ruby | Python | Java |
+----bash
+TOKEN="YOUR_TOKEN"
+API_URL="API_URL"
+ACCOUNT_ID="ACCOUNT_ID"
+
+curl -X GET \
+  "$API_URL/api/ota/v1/rentals?page[number]=1&page[size]=50&filter[account-id]=$ACCOUNT_ID" \
+  -H "User-Agent: API Client" \
+  -H "Accept: application/vnd.api+json" \
+  -H "Content-Type: application/vnd.api+json" \
+  -H "Authorization: Bearer $TOKEN"
+----ruby
+token = "YOUR_TOKEN"
+api_url = "API_URL"
 media_type = "application/vnd.api+json"
 options = {
   headers: {
@@ -44,7 +56,104 @@ Account.approved.each do |account|
     page_number++
   end
 end
-~~~
+----python
+import requests
+import json
+
+token = "YOUR_TOKEN"
+api_url = "API_URL"
+media_type = "application/vnd.api+json"
+headers = {
+    "User-Agent": "Api client",
+    "Accept": media_type,
+    "Content-Type": media_type,
+    "Authorization": f"Bearer {token}"
+}
+
+# Assuming you have a function to get approved accounts: get_approved_accounts()
+approved_accounts = get_approved_accounts()
+
+for account in approved_accounts:
+    page_number = 1
+    while True:
+        url = f"{api_url}/api/ota/v1/rentals?page[number]={page_number}&page[size]=50&filter[account-id]={account['id']}"
+        response = requests.get(url, headers=headers)
+        data = json.loads(response.text)
+
+        for rental in data["data"]:
+            # Import rental
+            import_rental(rental)
+
+        if page_number >= data["meta"]["pagination"]["pages"]:
+            break
+
+        page_number += 1
+----java
+import okhttp3.*;
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import java.io.IOException;
+
+public class AccountSynchronization {
+
+    public static void main(String[] args) {
+        String token = "YOUR_TOKEN";
+        String api_url = "API_URL";
+        MediaType mediaType = MediaType.parse("application/vnd.api+json");
+
+        OkHttpClient client = new OkHttpClient();
+
+        // Assuming you have a function to retrieve approved account IDs: getApprovedAccountIds()
+        JSONArray approvedAccountIds = getApprovedAccountIds();
+
+        for (int i = 0; i < approvedAccountIds.length(); i++) {
+            int accountId = approvedAccountIds.getInt(i);
+            int pageNumber = 1;
+            while (true) {
+                String url = api_url + "/api/ota/v1/rentals?page[number]=" + pageNumber + "&page[size]=50&filter[account-id]=" + accountId;
+
+                Request request = new Request.Builder()
+                        .url(url)
+                        .addHeader("User-Agent", "API Client")
+                        .addHeader("Accept", mediaType.toString())
+                        .addHeader("Content-Type", mediaType.toString())
+                        .addHeader("Authorization", "Bearer " + token)
+                        .build();
+
+                try {
+                    Response response = client.newCall(request).execute();
+                    JSONObject data = new JSONObject(response.body().string());
+
+                    JSONArray rentals = data.getJSONArray("data");
+                    for (int j = 0; j < rentals.length(); j++) {
+                        // Import rental
+                        importRental(rentals.getJSONObject(j));
+                    }
+
+                    if (pageNumber >= data.getJSONObject("meta").getJSONObject("pagination").getInt("pages")) {
+                        break;
+                    }
+
+                    pageNumber++;
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+    // Define your functions here:
+    private static JSONArray getApprovedAccountIds() {
+        // Implement your logic to get approved account IDs
+        return new JSONArray();
+    }
+
+    private static void importRental(JSONObject rental) {
+        // Implement your logic to import rentals
+    }
+}
+--end--
 
 ## Fetching Rental Availabilities
 
@@ -56,10 +165,24 @@ To optimize the retrieval process, it's recommended to use the fields parameter 
 
 <!-- TODO: choose approach 1 or approach 2 -->
 
-<!-- Approach 1: Fetch batches. No beautiful, but more effective -->
-~~~ruby
-token = "<YOUR_TOKEN>"
-api_url = "<API_URL>"
+### Code Examples
+
+| cURL | Ruby 1 | Ruby 2 | Python | Java |
+----bash
+TOKEN="YOUR_TOKEN"
+API_URL="API_URL"
+ACCOUNT_ID="ACCOUNT_ID"
+
+curl -X GET \
+  "$API_URL/api/ota/v1/rentals?page[number]=1&page[size]=50&filter[account-id]=$ACCOUNT_ID&fields[rentals]=availability" \
+  -H "User-Agent: API Client" \
+  -H "Accept: application/vnd.api+json" \
+  -H "Content-Type: application/vnd.api+json" \
+  -H "Authorization: Bearer $TOKEN"
+----ruby
+# Approach 1: Fetch batches. No beautiful, but more effective
+token = "YOUR_TOKEN"
+api_url = "API_URL"
 media_type = "application/vnd.api+json"
 options = {
   headers: {
@@ -89,12 +212,10 @@ Account.approved.each do |account|
   end
   disable_rentals(account_rentals_ids)
 end
-~~~
-
-<!-- Approach 2: Better code, but less effective -->
-~~~ruby
-token = "<YOUR_TOKEN>"
-api_url = "<API_URL>"
+----ruby
+# Approach 2: Better code, but less effective
+token = "YOUR_TOKEN"
+api_url = "API_URL"
 media_type = "application/vnd.api+json"
 options = {
   headers: {
@@ -117,7 +238,126 @@ Rental.each do |rental|
     hide_rental(rental)
   end
 end
-~~~
+----python
+import requests
+import json
+
+token = "YOUR_TOKEN"
+api_url = "API_URL"
+media_type = "application/vnd.api+json"
+headers = {
+    "User-Agent": "Api client",
+    "Accept": media_type,
+    "Content-Type": media_type,
+    "Authorization": f"Bearer {token}"
+}
+
+# Assuming you have a function to get approved accounts: get_approved_accounts()
+approved_accounts = get_approved_accounts()
+
+for account in approved_accounts:
+    # Assuming you have a function to get rentals for account: get_rentals_for_account(account)
+    account_rentals_ids = get_rentals_for_account(account)
+    page_number = 1
+    while True:
+        url = f"{api_url}/api/ota/v1/rentals?page[number]={page_number}&page[size]=50&filter[account-id]={account['id']}&fields[rentals]=availability"
+        response = requests.get(url, headers=headers)
+        data = json.loads(response.text)
+
+        for rental in data["data"]:
+            # Assuming you have a function to update rental availability: update_rental_availability(rental)
+            update_rental_availability(rental)
+
+        account_rentals_ids -= [rental['id'] for rental in data["data"]]
+        if page_number >= data["meta"]["pagination"]["pages"]:
+            break
+
+        page_number += 1
+
+    # Assuming you have a function to disable rentals: disable_rentals(account_rentals_ids)
+    disable_rentals(account_rentals_ids)
+----java
+import okhttp3.*;
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
+public class AccountSynchronization {
+
+    public static void main(String[] args) {
+        String token = "YOUR_TOKEN";
+        String api_url = "API_URL";
+        MediaType mediaType = MediaType.parse("application/vnd.api+json");
+
+        OkHttpClient client = new OkHttpClient();
+
+        // Assuming you have a function to retrieve approved account IDs: getApprovedAccountIds()
+        List&lt;Integer&gt; approvedAccountIds = getApprovedAccountIds();
+
+        for (int accountId : approvedAccountIds) {
+            // Assuming you have a function to get rentals for account: getRentalsForAccount(accountId)
+            List&lt;Integer&gt; accountRentalsIds = getRentalsForAccount(accountId);
+            int pageNumber = 1;
+            while (true) {
+                String url = api_url + "/api/ota/v1/rentals?page[number]=" + pageNumber + "&page[size]=50&filter[account-id]=" + accountId + "&fields[rentals]=availability";
+
+                Request request = new Request.Builder()
+                        .url(url)
+                        .addHeader("User-Agent", "API Client")
+                        .addHeader("Accept", mediaType.toString())
+                        .addHeader("Content-Type", mediaType.toString())
+                        .addHeader("Authorization", "Bearer " + token)
+                        .build();
+
+                try {
+                    Response response = client.newCall(request).execute();
+                    JSONObject data = new JSONObject(response.body().string());
+
+                    JSONArray rentals = data.getJSONArray("data");
+                    for (int j = 0; j < rentals.length(); j++) {
+                        // Assuming you have a function to update rental availability: updateRentalAvailability(rental)
+                        updateRentalAvailability(rentals.getJSONObject(j));
+                        accountRentalsIds.remove(Integer.valueOf(rentals.getJSONObject(j).getInt("id")));
+                    }
+
+                    if (pageNumber >= data.getJSONObject("meta").getJSONObject("pagination").getInt("pages")) {
+                        break;
+                    }
+
+                    pageNumber++;
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            // Assuming you have a function to disable rentals: disableRentals(accountRentalsIds)
+            disableRentals(accountRentalsIds);
+        }
+    }
+
+    // Define your functions here:
+    private static List&lt;Integer&gt; getApprovedAccountIds() {
+        // Implement your logic to get approved account IDs
+        return new ArrayList&lt;&gt;();
+    }
+
+    private static List&lt;Integer&gt; getRentalsForAccount(int accountId) {
+        // Implement your logic to get rentals for account
+        return new ArrayList&lt;&gt;();
+    }
+
+    private static void updateRentalAvailability(JSONObject rental) {
+        // Implement your logic to update rental availability
+    }
+
+    private static void disableRentals(List&lt;Integer&gt; rentalIds) {
+        // Implement your logic to disable rentals
+    }
+}
+--end--
 
 ## Understanding availabilities
 
@@ -133,18 +373,17 @@ The regular availability object consists of a map field, which contains statuses
 
 Scope for ActiveRecord rental model could look like (assuming you are using Postgres and named `availability[map]` as `availability_map` and `availability[start_date]` as `availability_start_date`):
 
-~~~ruby
+### Code Examples
+
+| Ruby | SQL Query |
+----ruby
   scope :by_availabilities, ->(date, length) {
     unavailable_status = '1'
     start_point = "DATE_PART('day', TIMESTAMP :date - availability_start_date)::integer+1"
     availability_to_check_sql = "SUBSTR(availability_map, #{start_point}, :length_of_stay)"
     where("#{availability_to_check_sql} NOT SIMILAR TO :check_statuses", date: date, length_of_stay: length, check_statuses: unavailable_status)
   }
-~~~
-
-**SQL Example:**
-
-~~~sql
+----sql
 SELECT r.id
 FROM rentals r
 WHERE
@@ -152,10 +391,9 @@ WHERE
             DATE_PART('day', TIMESTAMP '2023-07-01' - r.availability_start_date)::integer + 1,
             7)
   NOT SIMILAR TO '1';
-~~~
 
-`2023-07-01` - is a sample start date, `7` is a sample length of stay.
-
+-- `2023-07-01` - is a sample start date, `7` is a sample length of stay.
+--end--
 
 ## Fetching Rental Prices
 
