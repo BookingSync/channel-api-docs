@@ -163,11 +163,9 @@ Availability is a just a rental field (see [Rental Schema](https://demo.platform
 
 To optimize the retrieval process, it's recommended to use the fields parameter when fetching rental data. By specifying `fields[rentals]=availability`, you can streamline the API response to include only the necessary availability information, improving efficiency.
 
-<!-- TODO: choose approach 1 or approach 2 -->
-
 ### Code Examples
 
-| cURL | Ruby 1 | Ruby 2 | Python | Java |
+| cURL | Ruby | Python | Java |
 ----bash
 TOKEN="YOUR_TOKEN"
 API_URL="API_URL"
@@ -180,7 +178,6 @@ curl -X GET \
   -H "Content-Type: application/vnd.api+json" \
   -H "Authorization: Bearer $TOKEN"
 ----ruby
-# Approach 1: Fetch batches. No beautiful, but more effective
 token = "YOUR_TOKEN"
 api_url = "API_URL"
 media_type = "application/vnd.api+json"
@@ -211,32 +208,6 @@ Account.approved.each do |account|
     page_number++
   end
   disable_rentals(account_rentals_ids)
-end
-----ruby
-# Approach 2: Better code, but less effective
-token = "YOUR_TOKEN"
-api_url = "API_URL"
-media_type = "application/vnd.api+json"
-options = {
-  headers: {
-    "User-Agent" => "Api client",
-    "Accept" => media_type,
-    "Content-Type" => media_type,
-    "Authorization" => "Bearer #{token}"
-  }
-}
-
-Rental.each do |rental|
-  request = Excon.new(URI.join(api_url, "/api/ota/v1/rentals/#{rental.remote_id}&fields[rentals]=availability").to_s, options)
-
-  response = request.request({ method: :get })
-  if response.code == 200
-    json = JSON.parse(response.body)
-    update_rental_availability(rental["data"]["attributes"]["availability"])
-    make_rental_visible_if_was_hidden(rental)
-  else
-    hide_rental(rental)
-  end
 end
 ----python
 import requests
@@ -420,10 +391,11 @@ There are 3 kinds of LOS records ([LOS kinds](https://developers.bookingsync.com
   2. **rental_price_before_special_offers** - Price for the rent only, before special offers discounts being applied.
   3. **final_price** - Price including all required fees and taxes.
 
-If you want to avoid price discrepancy, you have to use **rental_price** and apply all the fees and taxes on your side. Otherwise just use **final_price**.
-Read more about [difference between rental price and final price](/guides/difference-between-rental-price-and-final-price/).
+We strongly advise using the LOS **final_price**. Although this might lead to a discrepancy between the **search_price** and the **booking_price**, such variance is permissible within our system. We anticipate that the **booking_price** will not be lower than that stated in the quote request; however, it might be higher.
 
-> Recommendation: We update LOS files every 12 hours.
+To avoid any such price discrepancy, you have the option to utilize the **rental_price** and apply all fees and taxes on your end. For an in-depth understanding of handling fees and taxes, please refer to our comprehensive guides on [Fees & Services](https://manual.bookingsync.com/hc/en-us/articles/360005323933-Fees-Services) and [Applying a New Tax](https://manual.bookingsync.com/hc/en-us/articles/360005323693-Apply-a-new-tax#3).
+
+> Note: We update LOS files every 12 hours.
 
 ## Filtering Rentals by Price
 
@@ -443,9 +415,22 @@ CREATE TABLE public.los_records (
 );
 ~~~
 
-**Sample ActiveRecord model for EUR LOS records**
+**Filtering LOS records**
 
-~~~ruby
+| SQL | Ruby On Rails |
+----sql
+SELECT * FROM los_records
+WHERE
+  (min_occupancy = 1 OR (max_occupancy >= :occupancy AND min_occupancy <= :occupancy))
+  AND day = :date
+  AND rates -> :length IS NOT NULL
+  AND
+  (
+    (rates -> :length >= :min_price OR :min_price IS NULL)
+    AND
+    (rates -> :length <= :max_price OR :max_price IS NULL)
+  );
+----ruby
 class LosRecord < ApplicationRecord
   # Helper scopes
   scope :by_occupancy, -> (occupancy) {
@@ -474,15 +459,18 @@ class LosRecord < ApplicationRecord
     scope.possible_to_stay_for(length)
       .by_min_max_price(length, min_price, max_price)
   }
+
+  scope :by_availabilities, ->(date, length) {
+    unavailable_status = '1'
+    start_point = "DATE_PART('day', TIMESTAMP :date - availability_start_date)::integer+1"
+    availability_to_check_sql = "SUBSTR(availability_map, #{start_point}, :length_of_stay)"
+    where("#{availability_to_check_sql} NOT SIMILAR TO :check_statuses", date: date, length_of_stay: length, check_statuses: unavailable_status)
+  }
 end
-~~~
 
-In controller you can use this scope to filter rentals:
-
-~~~ruby
-  # `by_availabilities` scope was described above
-  @rentals = Rental.by_availabilities(params[:date], params[:length])
-  @rentals = @rentals
-    .joins(:los_records)
-    .merge(LosRecord.by_occupancy_date_rate_price(params[:occupancy], params[:date], params[:length], params[:min_price], params[:max_price]))
-~~~
+# In controller you can use this scope to filter rentals (`by_availabilities` scope was described above):
+@rentals = Rental.by_availabilities(params[:date], params[:length])
+@rentals = @rentals
+  .joins(:los_records)
+  .merge(LosRecord.by_occupancy_date_rate_price(params[:occupancy], params[:date], params[:length], params[:min_price], params[:max_price]))
+--end--

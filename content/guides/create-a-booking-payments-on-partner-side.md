@@ -380,7 +380,7 @@ public class BookingCreation {
 --end--
 
 
-> **Note:** If a created booking includes the not null `tentative-expires-at` field, it may be automatically canceled if no payment is made. Therefore, it's essential to proceed with payment creation.
+> **Important:** Every booking has a tentative-expires-at field, which is set to expire 10 minutes after the booking's creation. If no payment is made within this window, the booking will be automatically canceled by our system. This duration can be extended upon request.
 
 We strongly recommend setting the `Idempotency-Key` header to prevent duplicate creations. Generate a UUID for each order and use it as the `Idempotency-Key`.
 

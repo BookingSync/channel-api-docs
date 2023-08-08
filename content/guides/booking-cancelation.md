@@ -210,23 +210,3 @@ public class CancelBooking {
     }
 }
 --end--
-
-## Possible Validation Error
-
-In case of a validation error, the response will resemble the following:
-
-~~~js
-  {
-    "errors" => [
-      {
-        "code" => "100",
-        "detail" => "currency - provided currency for cancelation must be the same as the one from booking",
-        "source" => {
-          "pointer" => "/data/attributes/currency"
-        },
-        "status" => "422",
-        "title" => "provided currency for cancelation must be the same as the one from booking"
-      }
-    ]
-  }
-~~~
