@@ -8,9 +8,10 @@
     <link rel="stylesheet" href="/assets/stylesheets/application.css">
     <link href='https://fonts.googleapis.com/css?family=Open+Sans:400italic,400,700' rel='stylesheet' type='text/css'>
     <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css">
-    <link rel="stylesheet" href="/highlight.css">
+    <link rel="stylesheet" href="/css/prism.css">
     <script src="https://code.jquery.com/jquery-1.11.0.min.js"></script>
     <script src="/assets/javascripts/application.js"></script>
+    <script src="/js/prism.js"></script>
 
     <!-- you don't need to keep this, but it's cool for stats! -->
     <meta name="generator" content="nanoc 3.8.0">
@@ -77,17 +78,18 @@
 
 <p>The Booking Cancellation API allows you to cancel bookings according to the rental’s cancellation policy. The cancellation policy can be retrieved from the rental’s endpoint and includes details such as eligible cancellation days and penalty percentages.</p>
 
-<pre><code class="language-js">  <span class="s2">"cancelation-policy-items"</span><span class="o">:</span> <span class="p">[</span>
-    <span class="p">{</span>
-      <span class="s2">"id"</span><span class="o">:</span> <span class="s2">"1"</span><span class="p">,</span>
-      <span class="s2">"penalty-percentage"</span><span class="o">:</span> <span class="mf">10</span><span class="p">,</span>
-      <span class="s2">"eligible-days"</span><span class="o">:</span> <span class="mf">2</span><span class="p">,</span>
-      <span class="s2">"message-translations"</span><span class="o">:</span> <span class="p">{</span>
-        <span class="s2">"en"</span><span class="o">:</span> <span class="s2">"Lorem ipsum"</span><span class="p">,</span>
-        <span class="s2">"fr"</span><span class="o">:</span> <span class="s2">"Lorem ipsum"</span>
-      <span class="p">}</span>
-    <span class="p">}</span>
-  <span class="p">]</span></code></pre>
+<pre><code class="language-js">  "cancelation-policy-items": [
+    {
+      "id": "1",
+      "penalty-percentage": 10,
+      "eligible-days": 2,
+      "message-translations": {
+        "en": "Lorem ipsum",
+        "fr": "Lorem ipsum"
+      }
+    }
+  ]
+</code></pre>
 
 <p>In this example, a booking can be canceled up to 2 days before check-in with a penalty of 10% from the booking’s final price.</p>
 
@@ -101,73 +103,201 @@
   <li>Make a PATCH request to the booking cancellation endpoint:</li>
 </ol>
 
-<pre><code class="language-ruby"><span class="n">token</span> <span class="o">=</span> <span class="s2">"&lt;YOUR_TOKEN&gt;"</span>
-<span class="n">api_url</span> <span class="o">=</span> <span class="s2">"&lt;API_URL&gt;"</span>
-<span class="n">media_type</span> <span class="o">=</span> <span class="s2">"application/vnd.api+json"</span>
+<div class="tabbable"><ul class="nav nav-tabs"><li class="active"><a data-toggle="tab" href="#content-1-0">cURL</a></li>
+<li class=""><a data-toggle="tab" href="#content-1-1">Ruby</a></li>
+<li class=""><a data-toggle="tab" href="#content-1-2">Python</a></li>
+<li class=""><a data-toggle="tab" href="#content-1-3">Java</a></li></ul><div class="tab-content"><div id="content-1-0" class="tab-pane fade in active"><pre><code class="language-bash">TOKEN="YOUR_TOKEN"
+API_URL="API_URL"
+BOOKING_ID="111"
 
-<span class="c1"># Set headers and options for the request</span>
-<span class="n">headers</span> <span class="o">=</span> <span class="p">{</span>
-  <span class="s2">"User-Agent"</span><span class="p">:</span> <span class="s2">"Api client"</span><span class="p">,</span>
-  <span class="s2">"Accept"</span><span class="p">:</span> <span class="n">media_type</span><span class="p">,</span>
-  <span class="s2">"Content-Type"</span><span class="p">:</span> <span class="n">media_type</span><span class="p">,</span>
-  <span class="s2">"Authorization"</span><span class="p">:</span> <span class="s2">"Bearer </span><span class="si">#{</span><span class="n">token</span><span class="si">}</span><span class="s2">"</span>
-<span class="p">}</span>
+curl -X PATCH \
+  '$API_URL/bookings/$BOOKING_ID/cancel' \
+  -H 'User-Agent: Api client' \
+  -H 'Accept: application/vnd.api+json' \
+  -H 'Content-Type: application/vnd.api+json' \
+  -H 'Authorization: Bearer $TOKEN' \
+  -d '{
+    "data": {
+      "type": "bookings",
+      "id": "$BOOKING_ID",
+      "attributes": {
+        "cancelation-reason": "canceled_by_traveller_other",
+        "cancelation-description": "health concern",
+        "channel-cancelation-cost": "80.0",
+        "currency": "USD"
+      }
+    }
+  }'</code></pre></div>
+<div id="content-1-1" class="tab-pane fade in "><pre><code class="language-ruby">token = "YOUR_TOKEN"
+api_url = "API_URL"
+media_type = "application/vnd.api+json"
 
-<span class="n">options</span> <span class="o">=</span> <span class="p">{</span>
-  <span class="ss">headers</span><span class="p">:</span> <span class="n">headers</span>
-<span class="p">}</span>
+# Set headers and options for the request
+headers = {
+  "User-Agent": "Api client",
+  "Accept": media_type,
+  "Content-Type": media_type,
+  "Authorization": "Bearer #{token}"
+}
 
-<span class="c1"># Construct the request</span>
-<span class="n">booking_id</span> <span class="o">=</span> <span class="s2">"&lt;BOOKING_ID&gt;"</span>
-<span class="n">cancelation_reason</span> <span class="o">=</span> <span class="s2">"canceled_by_traveller_other"</span>
-<span class="n">cancelation_description</span> <span class="o">=</span> <span class="s2">"health concern"</span>
-<span class="n">channel_cancelation_cost</span> <span class="o">=</span> <span class="s2">"80.0"</span>
-<span class="n">currency</span> <span class="o">=</span> <span class="s2">"USD"</span>
+options = {
+  headers: headers
+}
 
-<span class="n">payload</span> <span class="o">=</span> <span class="p">{</span>
-  <span class="ss">data</span><span class="p">:</span> <span class="p">{</span>
-    <span class="ss">type</span><span class="p">:</span> <span class="s2">"bookings"</span><span class="p">,</span>
-    <span class="nb">id</span><span class="p">:</span> <span class="n">booking_id</span><span class="p">,</span>
-    <span class="ss">attributes</span><span class="p">:</span> <span class="p">{</span>
-      <span class="s2">"cancelation-reason"</span><span class="p">:</span> <span class="n">cancelation_reason</span><span class="p">,</span>
-      <span class="s2">"cancelation-description"</span><span class="p">:</span> <span class="n">cancelation_description</span><span class="p">,</span>
-      <span class="s2">"channel-cancelation-cost"</span><span class="p">:</span> <span class="n">channel_cancelation_cost</span><span class="p">,</span>
-      <span class="s2">"currency"</span><span class="p">:</span> <span class="n">currency</span>
-    <span class="p">}</span>
-  <span class="p">}</span>
-<span class="p">}</span>
+# Construct the request
+booking_id = "BOOKING_ID"
+cancelation_reason = "canceled_by_traveller_other"
+cancelation_description = "health concern"
+channel_cancelation_cost = "80.0"
+currency = "USD"
 
-<span class="n">request_url</span> <span class="o">=</span> <span class="no">URI</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">api_url</span><span class="p">,</span> <span class="s2">"/bookings/</span><span class="si">#{</span><span class="n">booking_id</span><span class="si">}</span><span class="s2">/cancel"</span><span class="p">)</span><span class="o">.</span><span class="n">to_s</span>
-<span class="n">request</span> <span class="o">=</span> <span class="no">Excon</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">request_url</span><span class="p">,</span> <span class="n">options</span><span class="p">)</span>
+payload = {
+  data: {
+    type: "bookings",
+    id: booking_id,
+    attributes: {
+      "cancelation-reason": cancelation_reason,
+      "cancelation-description": cancelation_description,
+      "channel-cancelation-cost": channel_cancelation_cost,
+      "currency": currency
+    }
+  }
+}
 
-<span class="c1"># Send the request and handle the response</span>
-<span class="n">response</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">request</span><span class="p">(</span><span class="nb">method</span><span class="p">:</span> <span class="ss">:patch</span><span class="p">,</span> <span class="ss">body</span><span class="p">:</span> <span class="n">payload</span><span class="o">.</span><span class="n">to_json</span><span class="p">)</span>
-<span class="n">json</span> <span class="o">=</span> <span class="no">JSON</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">body</span><span class="p">)</span>
+request_url = URI.join(api_url, "/bookings/#{booking_id}/cancel").to_s
+request = Excon.new(request_url, options)
 
-<span class="k">if</span> <span class="n">response</span><span class="o">.</span><span class="n">status</span> <span class="o">==</span> <span class="mi">200</span>
-  <span class="n">booking_canceled_at</span> <span class="o">=</span> <span class="n">json</span><span class="o">[</span><span class="s2">"data"</span><span class="o">][</span><span class="s2">"attributes"</span><span class="o">][</span><span class="s2">"canceled-at"</span><span class="o">]</span>
-  <span class="c1"># Update new booking information</span>
-<span class="k">else</span>
-  <span class="n">handle_errors</span><span class="p">(</span><span class="n">json</span><span class="p">)</span>
-<span class="k">end</span></code></pre>
+# Send the request and handle the response
+response = request.request(method: :patch, body: payload.to_json)
+json = JSON.parse(response.body)
+
+if response.status == 200
+  booking_canceled_at = json["data"]["attributes"]["canceled-at"]
+  # Update new booking information
+else
+  handle_errors(json)
+end</code></pre></div>
+<div id="content-1-2" class="tab-pane fade in "><pre><code class="language-python">import requests
+import json
+
+token = "YOUR_TOKEN"
+api_url = "API_URL"
+media_type = "application/vnd.api+json"
+
+# Set headers for the request
+headers = {
+    "User-Agent": "Api client",
+    "Accept": media_type,
+    "Content-Type": media_type,
+    "Authorization": f"Bearer {token}"
+}
+
+# Construct the request
+booking_id = "BOOKING_ID"
+cancelation_reason = "canceled_by_traveller_other"
+cancelation_description = "health concern"
+channel_cancelation_cost = "80.0"
+currency = "USD"
+
+payload = {
+    "data": {
+        "type": "bookings",
+        "id": booking_id,
+        "attributes": {
+            "cancelation-reason": cancelation_reason,
+            "cancelation-description": cancelation_description,
+            "channel-cancelation-cost": channel_cancelation_cost,
+            "currency": currency
+        }
+    }
+}
+
+request_url = f"{api_url}/bookings/{booking_id}/cancel"
+
+# Send the request and handle the response
+response = requests.patch(request_url, headers=headers, data=json.dumps(payload))
+response_json = response.json()
+
+if response.status_code == 200:
+    booking_canceled_at = response_json["data"]["attributes"]["canceled-at"]
+    # Update new booking information
+else:
+    handle_errors(response_json)</code></pre></div>
+<div id="content-1-3" class="tab-pane fade in "><pre><code class="language-java">import okhttp3.*;
+import org.json.JSONObject;
+
+import java.io.IOException;
+
+public class CancelBooking {
+
+    private static final String TOKEN = "YOUR_TOKEN";
+    private static final String API_URL = "API_URL";
+    private static final String MEDIA_TYPE = "application/vnd.api+json";
+
+    public static void main(String[] args) {
+        OkHttpClient client = new OkHttpClient();
+        MediaType mediaType = MediaType.parse(MEDIA_TYPE);
+        String bookingId = "YOUR_BOOKING_ID"; // Replace with your actual booking id
+
+        JSONObject payload = new JSONObject();
+        payload.put("type", "bookings");
+        payload.put("id", bookingId);
+        JSONObject attributes = new JSONObject();
+        attributes.put("cancelation-reason", "canceled_by_traveller_other");
+        attributes.put("cancelation-description", "health concern");
+        attributes.put("channel-cancelation-cost", "80.0");
+        attributes.put("currency", "USD");
+        payload.put("attributes", attributes);
+
+        RequestBody body = RequestBody.create(mediaType, payload.toString());
+
+        Request request = new Request.Builder()
+                .url(API_URL + "/bookings/" + bookingId + "/cancel")
+                .patch(body)
+                .addHeader("User-Agent", "Api client")
+                .addHeader("Accept", MEDIA_TYPE)
+                .addHeader("Content-Type", MEDIA_TYPE)
+                .addHeader("Authorization", "Bearer " + TOKEN)
+                .build();
+
+        try {
+            Response response = client.newCall(request).execute();
+            int responseStatus = response.code();
+
+            if (responseStatus == 200) {
+                JSONObject jsonResponse = new JSONObject(response.body().string());
+                String bookingCanceledAt = jsonResponse.getJSONObject("data").getJSONObject("attributes").getString("canceled-at");
+                // Update new booking information
+                System.out.println("Booking canceled at: " + bookingCanceledAt);
+            } else {
+                // Handle errors
+                System.out.println("Error: " + response.body().string());
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+}</code></pre></div></div></div>
 
 <h3 id="possible-validation-error">Possible Validation Error</h3>
 
 <p>In case of a validation error, the response will resemble the following:</p>
 
-<pre><code class="language-js">  <span class="p">{</span>
-    <span class="s2">"errors"</span> <span class="p">=&gt;</span> <span class="p">[</span>
-      <span class="p">{</span>
-        <span class="s2">"code"</span> <span class="p">=&gt;</span> <span class="s2">"100"</span><span class="p">,</span>
-        <span class="s2">"detail"</span> <span class="p">=&gt;</span> <span class="s2">"currency - provided currency for cancelation must be the same as the one from booking"</span><span class="p">,</span>
-        <span class="s2">"source"</span> <span class="p">=&gt;</span> <span class="p">{</span>
-          <span class="s2">"pointer"</span> <span class="p">=&gt;</span> <span class="s2">"/data/attributes/currency"</span>
-        <span class="p">},</span>
-        <span class="s2">"status"</span> <span class="p">=&gt;</span> <span class="s2">"422"</span><span class="p">,</span>
-        <span class="s2">"title"</span> <span class="p">=&gt;</span> <span class="s2">"provided currency for cancelation must be the same as the one from booking"</span>
-      <span class="p">}</span>
-    <span class="p">]</span>
-  <span class="p">}</span></code></pre>
+<pre><code class="language-js">  {
+    "errors" =&gt; [
+      {
+        "code" =&gt; "100",
+        "detail" =&gt; "currency - provided currency for cancelation must be the same as the one from booking",
+        "source" =&gt; {
+          "pointer" =&gt; "/data/attributes/currency"
+        },
+        "status" =&gt; "422",
+        "title" =&gt; "provided currency for cancelation must be the same as the one from booking"
+      }
+    ]
+  }
+</code></pre>
 
         </div>
       </div>

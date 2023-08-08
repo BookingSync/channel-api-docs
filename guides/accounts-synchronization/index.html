@@ -8,9 +8,10 @@
     <link rel="stylesheet" href="/assets/stylesheets/application.css">
     <link href='https://fonts.googleapis.com/css?family=Open+Sans:400italic,400,700' rel='stylesheet' type='text/css'>
     <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css">
-    <link rel="stylesheet" href="/highlight.css">
+    <link rel="stylesheet" href="/css/prism.css">
     <script src="https://code.jquery.com/jquery-1.11.0.min.js"></script>
     <script src="/assets/javascripts/application.js"></script>
+    <script src="/js/prism.js"></script>
 
     <!-- you don't need to keep this, but it's cool for stats! -->
     <meta name="generator" content="nanoc 3.8.0">
@@ -70,10 +71,7 @@
 <ol id="markdown-toc">
   <li><a href="#preface" id="markdown-toc-preface">Preface</a></li>
   <li><a href="#get-all-accounts" id="markdown-toc-get-all-accounts">Get All Accounts</a></li>
-  <li><a href="#code-example-in-curl" id="markdown-toc-code-example-in-curl">Code example in cURL</a></li>
-  <li><a href="#code-example-in-ruby" id="markdown-toc-code-example-in-ruby">Code example in Ruby</a></li>
-  <li><a href="#code-example-in-python" id="markdown-toc-code-example-in-python">Code example in Python</a></li>
-  <li><a href="#code-example-in-java" id="markdown-toc-code-example-in-java">Code example in Java</a></li>
+  <li><a href="#code-examples" id="markdown-toc-code-examples">Code examples</a></li>
 </ol>
 
 <h3 id="preface">Preface</h3>
@@ -96,162 +94,154 @@
   <p>Recommendation: We suggest to do synchronization of accounts every 12-24 hours.</p>
 </blockquote>
 
-<h3 id="code-example-in-curl">Code example in cURL</h3>
+<h3 id="code-examples">Code examples</h3>
 
-<pre><code class="language-bash"><span class="nv">TOKEN</span><span class="o">=</span><span class="s2">"&lt;YOUR_TOKEN&gt;"</span>
-<span class="nv">API_URL</span><span class="o">=</span><span class="s2">"&lt;API_URL&gt;"</span>
+<div class="tabbable"><ul class="nav nav-tabs"><li class="active"><a data-toggle="tab" href="#content-1-0">cURL</a></li>
+<li class=""><a data-toggle="tab" href="#content-1-1">Ruby</a></li>
+<li class=""><a data-toggle="tab" href="#content-1-2">Python</a></li>
+<li class=""><a data-toggle="tab" href="#content-1-3">Java</a></li></ul><div class="tab-content"><div id="content-1-0" class="tab-pane fade in active"><pre><code class="language-bash">TOKEN="YOUR_TOKEN"
+API_URL="API_URL"
 
-curl -X GET <span class="se">\</span>
-  <span class="s2">"</span><span class="nv">$API_URL</span><span class="s2">/api/ota/v1/accounts"</span> <span class="se">\</span>
-  -H <span class="s2">"User-Agent: API Client"</span> <span class="se">\</span>
-  -H <span class="s2">"Accept: application/vnd.api+json"</span> <span class="se">\</span>
-  -H <span class="s2">"Content-Type: application/vnd.api+json"</span> <span class="se">\</span>
-  -H <span class="s2">"Authorization: Bearer </span><span class="nv">$TOKEN</span><span class="s2">"</span></code></pre>
+curl -X GET \
+  "$API_URL/api/ota/v1/accounts" \
+  -H "User-Agent: API Client" \
+  -H "Accept: application/vnd.api+json" \
+  -H "Content-Type: application/vnd.api+json" \
+  -H "Authorization: Bearer $TOKEN"</code></pre></div>
+<div id="content-1-1" class="tab-pane fade in "><pre><code class="language-ruby">require 'excon'
+require 'json'
 
-<h3 id="code-example-in-ruby">Code example in Ruby</h3>
+token = "YOUR_TOKEN"
+api_url = "API_URL"
+media_type = "application/vnd.api+json"
+options = {
+  headers: {
+    "User-Agent" =&gt; "Api client",
+    "Accept" =&gt; media_type,
+    "Content-Type" =&gt; media_type,
+    "Authorization" =&gt; "Bearer #{token}"
+  }
+}
+request = Excon.new(URI.join(api_url, "/api/ota/v1/accounts").to_s, options)
+response = request.request(method: :get)
 
-<pre><code class="language-ruby"><span class="nb">require</span> <span class="s1">'excon'</span>
-<span class="nb">require</span> <span class="s1">'json'</span>
+response.status
 
-<span class="n">token</span> <span class="o">=</span> <span class="s2">"&lt;YOUR_TOKEN&gt;"</span>
-<span class="n">api_url</span> <span class="o">=</span> <span class="s2">"&lt;API_URL&gt;"</span>
-<span class="n">media_type</span> <span class="o">=</span> <span class="s2">"application/vnd.api+json"</span>
-<span class="n">options</span> <span class="o">=</span> <span class="p">{</span>
-  <span class="ss">headers</span><span class="p">:</span> <span class="p">{</span>
-    <span class="s2">"User-Agent"</span> <span class="o">=&gt;</span> <span class="s2">"Api client"</span><span class="p">,</span>
-    <span class="s2">"Accept"</span> <span class="o">=&gt;</span> <span class="n">media_type</span><span class="p">,</span>
-    <span class="s2">"Content-Type"</span> <span class="o">=&gt;</span> <span class="n">media_type</span><span class="p">,</span>
-    <span class="s2">"Authorization"</span> <span class="o">=&gt;</span> <span class="s2">"Bearer </span><span class="si">#{</span><span class="n">token</span><span class="si">}</span><span class="s2">"</span>
-  <span class="p">}</span>
-<span class="p">}</span>
-<span class="n">request</span> <span class="o">=</span> <span class="no">Excon</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="no">URI</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">api_url</span><span class="p">,</span> <span class="s2">"/api/ota/v1/accounts"</span><span class="p">)</span><span class="o">.</span><span class="n">to_s</span><span class="p">,</span> <span class="n">options</span><span class="p">)</span>
-<span class="n">response</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">request</span><span class="p">(</span><span class="nb">method</span><span class="p">:</span> <span class="ss">:get</span><span class="p">)</span>
+already_import_accounts_ids = get_imported_accounts_ids # get an array of already imported accounts, Ex result: [1,2,3]
 
-<span class="n">response</span><span class="o">.</span><span class="n">status</span>
+json = JSON.parse(response.body)
+json["data"].each do |account|
+  # Import accounts
+  import_account(account["id"], account["attributes"]["name"])
+end
 
-<span class="n">already_import_accounts_ids</span> <span class="o">=</span> <span class="n">get_imported_accounts_ids</span> <span class="c1"># get an array of already imported accounts, Ex result: [1,2,3]</span>
+accounts_for_disabling = already_import_accounts_ids - json["data"].pluck("id")
+disable_accounts_and_rentals(accounts_for_disabling) # Disable accounts</code></pre></div>
+<div id="content-1-2" class="tab-pane fade in "><pre><code class="language-python">import requests
 
-<span class="n">json</span> <span class="o">=</span> <span class="no">JSON</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">body</span><span class="p">)</span>
-<span class="n">json</span><span class="o">[</span><span class="s2">"data"</span><span class="o">].</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">account</span><span class="o">|</span>
-  <span class="c1"># Import accounts</span>
-  <span class="n">import_account</span><span class="p">(</span><span class="n">account</span><span class="o">[</span><span class="s2">"id"</span><span class="o">]</span><span class="p">,</span> <span class="n">account</span><span class="o">[</span><span class="s2">"attributes"</span><span class="o">][</span><span class="s2">"name"</span><span class="o">]</span><span class="p">)</span>
-<span class="k">end</span>
+token = "YOUR_TOKEN"
+api_url = "API_URL"
+media_type = "application/vnd.api+json"
+headers = {
+    "User-Agent": "API Client",
+    "Accept": media_type,
+    "Content-Type": media_type,
+    "Authorization": f"Bearer {token}"
+}
+response = requests.get(f"{api_url}/api/ota/v1/accounts", headers=headers)
 
-<span class="n">accounts_for_disabling</span> <span class="o">=</span> <span class="n">already_import_accounts_ids</span> <span class="o">-</span> <span class="n">json</span><span class="o">[</span><span class="s2">"data"</span><span class="o">].</span><span class="n">pluck</span><span class="p">(</span><span class="s2">"id"</span><span class="p">)</span>
-<span class="n">disable_accounts_and_rentals</span><span class="p">(</span><span class="n">accounts_for_disabling</span><span class="p">)</span> <span class="c1"># Disable accounts</span></code></pre>
+response_status = response.status_code
 
-<p>Replace <code>&lt;YOUR_TOKEN&gt;</code> and <code>&lt;API_URL&gt;</code> with your specific authentication token and API URL in the provided example.</p>
+# Assuming you have a function to retrieve already imported account IDs: get_imported_accounts_ids
+already_import_accounts_ids = get_imported_accounts_ids()
 
-<h3 id="code-example-in-python">Code example in Python</h3>
+json_data = response.json()
+for account in json_data["data"]:
+    # Import accounts
+    import_account(account["id"], account["attributes"]["name"])
 
-<pre><code class="language-python"><span class="kn">import</span> <span class="nn">requests</span>
+accounts_for_disabling = [account_id for account_id in already_import_accounts_ids if account_id not in [a["id"] for a in json_data["data"]]]
+disable_accounts_and_rentals(accounts_for_disabling)  # Disable accounts</code></pre></div>
+<div id="content-1-3" class="tab-pane fade in "><pre><code class="language-java">import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
-<span class="n">token</span> <span class="o">=</span> <span class="s2">"&lt;YOUR_TOKEN&gt;"</span>
-<span class="n">api_url</span> <span class="o">=</span> <span class="s2">"&lt;API_URL&gt;"</span>
-<span class="n">media_type</span> <span class="o">=</span> <span class="s2">"application/vnd.api+json"</span>
-<span class="n">headers</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s2">"User-Agent"</span><span class="p">:</span> <span class="s2">"API Client"</span><span class="p">,</span>
-    <span class="s2">"Accept"</span><span class="p">:</span> <span class="n">media_type</span><span class="p">,</span>
-    <span class="s2">"Content-Type"</span><span class="p">:</span> <span class="n">media_type</span><span class="p">,</span>
-    <span class="s2">"Authorization"</span><span class="p">:</span> <span class="sa">f</span><span class="s2">"Bearer </span><span class="si">{</span><span class="n">token</span><span class="si">}</span><span class="s2">"</span>
-<span class="p">}</span>
-<span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">api_url</span><span class="si">}</span><span class="s2">/api/ota/v1/accounts"</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">)</span>
+public class AccountSynchronization {
 
-<span class="n">response_status</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span>
+    public static void main(String[] args) {
+        String token = "YOUR_TOKEN";
+        String api_url = "API_URL";
+        MediaType mediaType = MediaType.parse("application/vnd.api+json");
 
-<span class="c1"># Assuming you have a function to retrieve already imported account IDs: get_imported_accounts_ids</span>
-<span class="n">already_import_accounts_ids</span> <span class="o">=</span> <span class="n">get_imported_accounts_ids</span><span class="p">()</span>
+        OkHttpClient client = new OkHttpClient();
 
-<span class="n">json_data</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
-<span class="k">for</span> <span class="n">account</span> <span class="ow">in</span> <span class="n">json_data</span><span class="p">[</span><span class="s2">"data"</span><span class="p">]:</span>
-    <span class="c1"># Import accounts</span>
-    <span class="n">import_account</span><span class="p">(</span><span class="n">account</span><span class="p">[</span><span class="s2">"id"</span><span class="p">],</span> <span class="n">account</span><span class="p">[</span><span class="s2">"attributes"</span><span class="p">][</span><span class="s2">"name"</span><span class="p">])</span>
+        Request request = new Request.Builder()
+                .url(api_url + "/api/ota/v1/accounts")
+                .addHeader("User-Agent", "API Client")
+                .addHeader("Accept", mediaType.toString())
+                .addHeader("Content-Type", mediaType.toString())
+                .addHeader("Authorization", "Bearer " + token)
+                .build();
 
-<span class="n">accounts_for_disabling</span> <span class="o">=</span> <span class="p">[</span><span class="n">account_id</span> <span class="k">for</span> <span class="n">account_id</span> <span class="ow">in</span> <span class="n">already_import_accounts_ids</span> <span class="k">if</span> <span class="n">account_id</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="n">a</span><span class="p">[</span><span class="s2">"id"</span><span class="p">]</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">json_data</span><span class="p">[</span><span class="s2">"data"</span><span class="p">]]]</span>
-<span class="n">disable_accounts_and_rentals</span><span class="p">(</span><span class="n">accounts_for_disabling</span><span class="p">)</span>  <span class="c1"># Disable accounts</span></code></pre>
+        try {
+            Response response = client.newCall(request).execute();
+            int responseStatus = response.code();
 
-<p>Please replace <code>&lt;YOUR_TOKEN&gt;</code> and <code>&lt;API_URL&gt;</code> with your actual authentication token and API URL in the Python code. Additionally, make sure you have the necessary functions <strong>get_imported_accounts_ids</strong>, <strong>import_account</strong>, and <strong>disable_accounts_and_rentals</strong> defined and implemented in your Python script.</p>
+            // Assuming you have a function to retrieve already imported account IDs: getImportedAccountIds()
+            JSONArray alreadyImportAccountIds = getImportedAccountIds();
 
-<h3 id="code-example-in-java">Code example in Java</h3>
+            JSONObject responseBody = new JSONObject(response.body().string());
+            JSONArray accounts = responseBody.getJSONArray("data");
 
-<pre><code class="language-java"><span class="kn">import</span> <span class="nn">okhttp3.MediaType</span><span class="p">;</span>
-<span class="kn">import</span> <span class="nn">okhttp3.OkHttpClient</span><span class="p">;</span>
-<span class="kn">import</span> <span class="nn">okhttp3.Request</span><span class="p">;</span>
-<span class="kn">import</span> <span class="nn">okhttp3.Response</span><span class="p">;</span>
-<span class="kn">import</span> <span class="nn">org.json.JSONArray</span><span class="p">;</span>
-<span class="kn">import</span> <span class="nn">org.json.JSONObject</span><span class="p">;</span>
+            for (int i = 0; i &lt; accounts.length(); i++) {
+                JSONObject account = accounts.getJSONObject(i);
+                // Import accounts
+                importAccount(account.getInt("id"), account.getJSONObject("attributes").getString("name"));
+            }
 
-<span class="kd">public</span> <span class="kd">class</span> <span class="nc">AccountSynchronization</span> <span class="p">{</span>
+            JSONArray accountsForDisabling = new JSONArray();
+            for (int i = 0; i &lt; alreadyImportAccountIds.length(); i++) {
+                int accountId = alreadyImportAccountIds.getInt(i);
+                boolean found = false;
+                for (int j = 0; j &lt; accounts.length(); j++) {
+                    if (accounts.getJSONObject(j).getInt("id") == accountId) {
+                        found = true;
+                        break;
+                    }
+                }
+                if (!found) {
+                    accountsForDisabling.put(accountId);
+                }
+            }
+            // Disable accounts
+            disableAccountsAndRentals(accountsForDisabling);
 
-    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="p">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="p">)</span> <span class="p">{</span>
-        <span class="n">String</span> <span class="n">token</span> <span class="o">=</span> <span class="s">"&lt;YOUR_TOKEN&gt;"</span><span class="p">;</span>
-        <span class="n">String</span> <span class="n">api_url</span> <span class="o">=</span> <span class="s">"&lt;API_URL&gt;"</span><span class="p">;</span>
-        <span class="n">MediaType</span> <span class="n">mediaType</span> <span class="o">=</span> <span class="n">MediaType</span><span class="p">.</span><span class="na">parse</span><span class="p">(</span><span class="s">"application/vnd.api+json"</span><span class="p">);</span>
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
-        <span class="n">OkHttpClient</span> <span class="n">client</span> <span class="o">=</span> <span class="k">new</span> <span class="n">OkHttpClient</span><span class="p">();</span>
+    // Define your functions here:
+    private static JSONArray getImportedAccountIds() {
+        // Implement your logic to get imported account IDs
+        return new JSONArray();
+    }
 
-        <span class="n">Request</span> <span class="n">request</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Request</span><span class="p">.</span><span class="na">Builder</span><span class="p">()</span>
-                <span class="p">.</span><span class="na">url</span><span class="p">(</span><span class="n">api_url</span> <span class="o">+</span> <span class="s">"/api/ota/v1/accounts"</span><span class="p">)</span>
-                <span class="p">.</span><span class="na">addHeader</span><span class="p">(</span><span class="s">"User-Agent"</span><span class="p">,</span> <span class="s">"API Client"</span><span class="p">)</span>
-                <span class="p">.</span><span class="na">addHeader</span><span class="p">(</span><span class="s">"Accept"</span><span class="p">,</span> <span class="n">mediaType</span><span class="p">.</span><span class="na">toString</span><span class="p">())</span>
-                <span class="p">.</span><span class="na">addHeader</span><span class="p">(</span><span class="s">"Content-Type"</span><span class="p">,</span> <span class="n">mediaType</span><span class="p">.</span><span class="na">toString</span><span class="p">())</span>
-                <span class="p">.</span><span class="na">addHeader</span><span class="p">(</span><span class="s">"Authorization"</span><span class="p">,</span> <span class="s">"Bearer "</span> <span class="o">+</span> <span class="n">token</span><span class="p">)</span>
-                <span class="p">.</span><span class="na">build</span><span class="p">();</span>
+    private static void importAccount(int accountId, String accountName) {
+        // Implement your logic to import accounts
+    }
 
-        <span class="k">try</span> <span class="p">{</span>
-            <span class="n">Response</span> <span class="n">response</span> <span class="o">=</span> <span class="n">client</span><span class="p">.</span><span class="na">newCall</span><span class="p">(</span><span class="n">request</span><span class="p">).</span><span class="na">execute</span><span class="p">();</span>
-            <span class="kt">int</span> <span class="n">responseStatus</span> <span class="o">=</span> <span class="n">response</span><span class="p">.</span><span class="na">code</span><span class="p">();</span>
+    private static void disableAccountsAndRentals(JSONArray accountIds) {
+        // Implement your logic to disable accounts and rentals
+    }
+}</code></pre></div></div></div>
 
-            <span class="c1">// Assuming you have a function to retrieve already imported account IDs: getImportedAccountIds()</span>
-            <span class="n">JSONArray</span> <span class="n">alreadyImportAccountIds</span> <span class="o">=</span> <span class="n">getImportedAccountIds</span><span class="p">();</span>
+<p>Please replace <code>YOUR_TOKEN</code> and <code>API_URL</code> with your actual authentication token and API URL in the Python code.</p>
 
-            <span class="n">JSONObject</span> <span class="n">responseBody</span> <span class="o">=</span> <span class="k">new</span> <span class="n">JSONObject</span><span class="p">(</span><span class="n">response</span><span class="p">.</span><span class="na">body</span><span class="p">().</span><span class="na">string</span><span class="p">());</span>
-            <span class="n">JSONArray</span> <span class="n">accounts</span> <span class="o">=</span> <span class="n">responseBody</span><span class="p">.</span><span class="na">getJSONArray</span><span class="p">(</span><span class="s">"data"</span><span class="p">);</span>
-
-            <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">accounts</span><span class="p">.</span><span class="na">length</span><span class="p">();</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
-                <span class="n">JSONObject</span> <span class="n">account</span> <span class="o">=</span> <span class="n">accounts</span><span class="p">.</span><span class="na">getJSONObject</span><span class="p">(</span><span class="n">i</span><span class="p">);</span>
-                <span class="c1">// Import accounts</span>
-                <span class="n">importAccount</span><span class="p">(</span><span class="n">account</span><span class="p">.</span><span class="na">getInt</span><span class="p">(</span><span class="s">"id"</span><span class="p">),</span> <span class="n">account</span><span class="p">.</span><span class="na">getJSONObject</span><span class="p">(</span><span class="s">"attributes"</span><span class="p">).</span><span class="na">getString</span><span class="p">(</span><span class="s">"name"</span><span class="p">));</span>
-            <span class="p">}</span>
-
-            <span class="n">JSONArray</span> <span class="n">accountsForDisabling</span> <span class="o">=</span> <span class="k">new</span> <span class="n">JSONArray</span><span class="p">();</span>
-            <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">alreadyImportAccountIds</span><span class="p">.</span><span class="na">length</span><span class="p">();</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
-                <span class="kt">int</span> <span class="n">accountId</span> <span class="o">=</span> <span class="n">alreadyImportAccountIds</span><span class="p">.</span><span class="na">getInt</span><span class="p">(</span><span class="n">i</span><span class="p">);</span>
-                <span class="kt">boolean</span> <span class="n">found</span> <span class="o">=</span> <span class="kc">false</span><span class="p">;</span>
-                <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">j</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">j</span> <span class="o">&lt;</span> <span class="n">accounts</span><span class="p">.</span><span class="na">length</span><span class="p">();</span> <span class="n">j</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
-                    <span class="k">if</span> <span class="p">(</span><span class="n">accounts</span><span class="p">.</span><span class="na">getJSONObject</span><span class="p">(</span><span class="n">j</span><span class="p">).</span><span class="na">getInt</span><span class="p">(</span><span class="s">"id"</span><span class="p">)</span> <span class="o">==</span> <span class="n">accountId</span><span class="p">)</span> <span class="p">{</span>
-                        <span class="n">found</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
-                        <span class="k">break</span><span class="p">;</span>
-                    <span class="p">}</span>
-                <span class="p">}</span>
-                <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">found</span><span class="p">)</span> <span class="p">{</span>
-                    <span class="n">accountsForDisabling</span><span class="p">.</span><span class="na">put</span><span class="p">(</span><span class="n">accountId</span><span class="p">);</span>
-                <span class="p">}</span>
-            <span class="p">}</span>
-            <span class="c1">// Disable accounts</span>
-            <span class="n">disableAccountsAndRentals</span><span class="p">(</span><span class="n">accountsForDisabling</span><span class="p">);</span>
-
-        <span class="p">}</span> <span class="k">catch</span> <span class="p">(</span><span class="n">Exception</span> <span class="n">e</span><span class="p">)</span> <span class="p">{</span>
-            <span class="n">e</span><span class="p">.</span><span class="na">printStackTrace</span><span class="p">();</span>
-        <span class="p">}</span>
-    <span class="p">}</span>
-
-    <span class="c1">// Define your functions here:</span>
-    <span class="kd">private</span> <span class="kd">static</span> <span class="n">JSONArray</span> <span class="nf">getImportedAccountIds</span><span class="p">()</span> <span class="p">{</span>
-        <span class="c1">// Implement your logic to get imported account IDs</span>
-        <span class="k">return</span> <span class="k">new</span> <span class="n">JSONArray</span><span class="p">();</span>
-    <span class="p">}</span>
-
-    <span class="kd">private</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">importAccount</span><span class="p">(</span><span class="kt">int</span> <span class="n">accountId</span><span class="p">,</span> <span class="n">String</span> <span class="n">accountName</span><span class="p">)</span> <span class="p">{</span>
-        <span class="c1">// Implement your logic to import accounts</span>
-    <span class="p">}</span>
-
-    <span class="kd">private</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">disableAccountsAndRentals</span><span class="p">(</span><span class="n">JSONArray</span> <span class="n">accountIds</span><span class="p">)</span> <span class="p">{</span>
-        <span class="c1">// Implement your logic to disable accounts and rentals</span>
-    <span class="p">}</span>
-<span class="p">}</span></code></pre>
-
-<p>Please replace <code>&lt;YOUR_TOKEN&gt;</code> and <code>&lt;API_URL&gt;</code> with your actual authentication token and API URL in the Java code. Additionally, implement the necessary functions <strong>getImportedAccountIds</strong>, <strong>importAccount</strong>, and <strong>disableAccountsAndRentals</strong> according to your requirements.</p>
+<p>Additionally, make sure you have the necessary functions <strong>get_imported_accounts_ids</strong>, <strong>import_account</strong>, and <strong>disable_accounts_and_rentals</strong> defined and implemented in your Python script.</p>
 
         </div>
       </div>

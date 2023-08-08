@@ -8,9 +8,10 @@
     <link rel="stylesheet" href="/assets/stylesheets/application.css">
     <link href='https://fonts.googleapis.com/css?family=Open+Sans:400italic,400,700' rel='stylesheet' type='text/css'>
     <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css">
-    <link rel="stylesheet" href="/highlight.css">
+    <link rel="stylesheet" href="/css/prism.css">
     <script src="https://code.jquery.com/jquery-1.11.0.min.js"></script>
     <script src="/assets/javascripts/application.js"></script>
+    <script src="/js/prism.js"></script>
 
     <!-- you don't need to keep this, but it's cool for stats! -->
     <meta name="generator" content="nanoc 3.8.0">
@@ -87,12 +88,9 @@
 <p>Before you start using the API, complete the following steps:</p>
 
 <ol>
-  <li>
-<strong>Request a Demo Account</strong>: Begin by requesting a demo account from the <a href="mailto:partners@smily.com">Smily Partners Team</a>. This account will grant you access to the API.</li>
-  <li>
-<strong>Get an API Key and Host details</strong>: Obtain your API Key and host details from the <a href="mailto:partners@smily.com">Smily Partners Team</a>. These credentials are essential for authentication and making API requests.</li>
-  <li>
-<strong>Install cURL</strong>: Ensure that you have <a href="https://curl.haxx.se/">curl</a> installed on your machine :)</li>
+  <li><strong>Request a Demo Account</strong>: Begin by requesting a demo account from the <a href="mailto:partners@smily.com">Smily Partners Team</a>. This account will grant you access to the API.</li>
+  <li><strong>Get an API Key and Host details</strong>: Obtain your API Key and host details from the <a href="mailto:partners@smily.com">Smily Partners Team</a>. These credentials are essential for authentication and making API requests.</li>
+  <li><strong>Install cURL</strong>: Ensure that you have <a href="https://curl.haxx.se/">curl</a> installed on your machine :)</li>
 </ol>
 
 <h3 id="making-your-first-api-call">Making Your First API Call</h3>
@@ -100,27 +98,23 @@
 <p>Your API call should include the following components:</p>
 
 <ul>
-  <li>
-<strong>Host:</strong> Provided by our support team, the host will look like <code>https://&lt;NAME&gt;.platforms.bookingsync.com</code>.</li>
-  <li>
-<strong>Authorization Header:</strong> Include your API Key in the Authorization header for authentication.</li>
-  <li>
-<strong>Accept header:</strong> Set the <code>Accept</code> header to <code>application/vnd.api+json</code> to indicate the desired response format.</li>
-  <li>
-<strong>Request:</strong> When sending data via POST or PUT, format your payload as JSON.</li>
+  <li><strong>Host:</strong> Provided by our support team, the host will look like <code>https://&lt;NAME&gt;.platforms.bookingsync.com</code>.</li>
+  <li><strong>Authorization Header:</strong> Include your API Key in the Authorization header for authentication.</li>
+  <li><strong>Accept header:</strong> Set the <code>Accept</code> header to <code>application/vnd.api+json</code> to indicate the desired response format.</li>
+  <li><strong>Request:</strong> When sending data via POST or PUT, format your payload as JSON.</li>
 </ul>
 
 <h3 id="sample-curl-request">Sample cURL Request</h3>
 
 <p>Copy the following cURL example to make your first API call, which retrieves all <a href="https://demo.platforms.bookingsync.com/api-docs/index.html">accounts</a> interested in publishing listings on your website:</p>
 
-<pre><code class="language-bash">curl -i -X <span class="s1">'GET'</span> <span class="s1">'&lt;HOST&gt;/api/ota/v1/accounts'</span> -H <span class="s1">'accept: application/vnd.api+json'</span> -H <span class="s1">'Authorization: Bearer &lt;API_KEY&gt;'</span></code></pre>
+<pre><code class="language-bash">curl -i -X 'GET' '&lt;HOST&gt;/api/ota/v1/accounts' -H 'accept: application/vnd.api+json' -H 'Authorization: Bearer &lt;API_KEY&gt;'
+</code></pre>
 
 <ol>
   <li>Copy the cURL example above.</li>
   <li>Paste the curl call into your favorite text editor.</li>
-  <li>Replace **<api_key>** with your actual API key and **<host>** with your host details.</host></api_key>
-</li>
+  <li>Replace **<API_KEY>** with your actual API key and **<HOST>** with your host details.</HOST></API_KEY></li>
   <li>Copy the updated cURL command and paste it into your terminal.</li>
   <li>Press <strong>Enter</strong> to execute the request.</li>
   <li>A successful response with status <strong>HTTP/2 200</strong> indicates correct setup.</li>
@@ -130,78 +124,81 @@
 
 <h4 id="using-exconhttpsgithubcomexconexcon-library">Using <a href="https://github.com/excon/excon">Excon</a> Library</h4>
 
-<pre><code class="language-ruby"><span class="nb">require</span> <span class="s1">'excon'</span>
+<pre><code class="language-ruby">require 'excon'
 
-<span class="n">token</span> <span class="o">=</span> <span class="s2">"&lt;YOUR_TOKEN&gt;"</span>
-<span class="n">api_url</span> <span class="o">=</span> <span class="s2">"&lt;API_URL&gt;"</span>
-<span class="n">media_type</span> <span class="o">=</span> <span class="s2">"application/vnd.api+json"</span>
-<span class="n">options</span> <span class="o">=</span> <span class="p">{</span>
-  <span class="ss">headers</span><span class="p">:</span> <span class="p">{</span>
-    <span class="s2">"User-Agent"</span> <span class="o">=&gt;</span> <span class="s2">"Api client"</span><span class="p">,</span>
-    <span class="s2">"Accept"</span> <span class="o">=&gt;</span> <span class="n">media_type</span><span class="p">,</span>
-    <span class="s2">"Content-Type"</span> <span class="o">=&gt;</span> <span class="n">media_type</span><span class="p">,</span>
-    <span class="s2">"Authorization"</span> <span class="o">=&gt;</span> <span class="s2">"Bearer </span><span class="si">#{</span><span class="n">token</span><span class="si">}</span><span class="s2">"</span>
-  <span class="p">}</span>
-<span class="p">}</span>
-<span class="n">request</span> <span class="o">=</span> <span class="no">Excon</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="no">URI</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">api_url</span><span class="p">,</span> <span class="s2">"/api/ota/v1/accounts"</span><span class="p">)</span><span class="o">.</span><span class="n">to_s</span><span class="p">,</span> <span class="n">options</span><span class="p">)</span>
-<span class="n">response</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">request</span><span class="p">({</span> <span class="nb">method</span><span class="p">:</span> <span class="ss">:get</span> <span class="p">})</span>
+token = "&lt;YOUR_TOKEN&gt;"
+api_url = "&lt;API_URL&gt;"
+media_type = "application/vnd.api+json"
+options = {
+  headers: {
+    "User-Agent" =&gt; "Api client",
+    "Accept" =&gt; media_type,
+    "Content-Type" =&gt; media_type,
+    "Authorization" =&gt; "Bearer #{token}"
+  }
+}
+request = Excon.new(URI.join(api_url, "/api/ota/v1/accounts").to_s, options)
+response = request.request({ method: :get })
 
-<span class="n">response</span><span class="o">.</span><span class="n">status</span></code></pre>
+response.status
+</code></pre>
 
 <p>Using <a href="https://github.com/lostisland/faraday">Faraday</a> Library</p>
 
-<pre><code class="language-ruby"><span class="nb">require</span> <span class="s1">'faraday'</span>
+<pre><code class="language-ruby">require 'faraday'
 
-<span class="n">token</span> <span class="o">=</span> <span class="s2">"&lt;YOUR_TOKEN&gt;"</span>
-<span class="n">api_url</span> <span class="o">=</span> <span class="s2">"&lt;API_URL&gt;"</span>
-<span class="n">media_type</span> <span class="o">=</span> <span class="s2">"application/vnd.api+json"</span>
+token = "&lt;YOUR_TOKEN&gt;"
+api_url = "&lt;API_URL&gt;"
+media_type = "application/vnd.api+json"
 
-<span class="n">request</span> <span class="o">=</span> <span class="no">Faraday</span><span class="o">.</span><span class="n">new</span><span class="p">({</span> <span class="ss">ssl</span><span class="p">:</span> <span class="p">{</span> <span class="ss">verify</span><span class="p">:</span> <span class="kp">true</span> <span class="p">}</span> <span class="p">})</span> <span class="k">do</span> <span class="o">|</span><span class="n">f</span><span class="o">|</span>
-  <span class="n">f</span><span class="o">.</span><span class="n">adapter</span> <span class="ss">:net_http_persistent</span>
-<span class="k">end</span>
-<span class="n">request</span><span class="o">.</span><span class="n">headers</span><span class="o">[</span><span class="ss">:accept</span><span class="o">]</span> <span class="o">=</span> <span class="n">media_type</span>
-<span class="n">request</span><span class="o">.</span><span class="n">headers</span><span class="o">[</span><span class="ss">:content_type</span><span class="o">]</span> <span class="o">=</span> <span class="n">media_type</span>
-<span class="n">request</span><span class="o">.</span><span class="n">headers</span><span class="o">[</span><span class="ss">:user_agent</span><span class="o">]</span> <span class="o">=</span> <span class="s2">"Api client"</span>
-<span class="n">request</span><span class="o">.</span><span class="n">headers</span><span class="o">[</span><span class="ss">:authorization</span><span class="o">]</span> <span class="o">=</span> <span class="s2">"Bearer </span><span class="si">#{</span><span class="n">token</span><span class="si">}</span><span class="s2">"</span>
-<span class="n">request</span><span class="o">.</span><span class="n">url_prefix</span> <span class="o">=</span> <span class="n">api_url</span>
-<span class="n">response</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="ss">:get</span><span class="p">,</span> <span class="s2">"/api/ota/v1/accounts"</span><span class="p">)</span>
+request = Faraday.new({ ssl: { verify: true } }) do |f|
+  f.adapter :net_http_persistent
+end
+request.headers[:accept] = media_type
+request.headers[:content_type] = media_type
+request.headers[:user_agent] = "Api client"
+request.headers[:authorization] = "Bearer #{token}"
+request.url_prefix = api_url
+response = request.send(:get, "/api/ota/v1/accounts")
 
-<span class="n">response</span><span class="o">.</span><span class="n">status</span></code></pre>
+response.status
+</code></pre>
 
 <h3 id="code-example-in-java">Code example in Java</h3>
 
-<pre><code class="language-java"><span class="kn">import</span> <span class="nn">java.io.IOException</span><span class="p">;</span>
-<span class="kn">import</span> <span class="nn">okhttp3.OkHttpClient</span><span class="p">;</span>
-<span class="kn">import</span> <span class="nn">okhttp3.Request</span><span class="p">;</span>
-<span class="kn">import</span> <span class="nn">okhttp3.Response</span><span class="p">;</span>
+<pre><code class="language-java">import java.io.IOException;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 
-<span class="kd">public</span> <span class="kd">class</span> <span class="nc">SmilyChannelApiExample</span> <span class="p">{</span>
+public class SmilyChannelApiExample {
 
-    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="p">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="p">)</span> <span class="kd">throws</span> <span class="n">IOException</span> <span class="p">{</span>
-        <span class="n">String</span> <span class="n">token</span> <span class="o">=</span> <span class="s">"&lt;YOUR_TOKEN&gt;"</span><span class="p">;</span>
-        <span class="n">String</span> <span class="n">apiURL</span> <span class="o">=</span> <span class="s">"&lt;API_URL&gt;"</span><span class="p">;</span>
-        <span class="n">String</span> <span class="n">mediaType</span> <span class="o">=</span> <span class="s">"application/vnd.api+json"</span><span class="p">;</span>
+    public static void main(String[] args) throws IOException {
+        String token = "&lt;YOUR_TOKEN&gt;";
+        String apiURL = "&lt;API_URL&gt;";
+        String mediaType = "application/vnd.api+json";
 
-        <span class="n">OkHttpClient</span> <span class="n">client</span> <span class="o">=</span> <span class="k">new</span> <span class="n">OkHttpClient</span><span class="p">();</span>
+        OkHttpClient client = new OkHttpClient();
 
-        <span class="n">Request</span> <span class="n">request</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Request</span><span class="p">.</span><span class="na">Builder</span><span class="p">()</span>
-                <span class="p">.</span><span class="na">url</span><span class="p">(</span><span class="n">apiURL</span> <span class="o">+</span> <span class="s">"/api/ota/v1/accounts"</span><span class="p">)</span>
-                <span class="p">.</span><span class="na">addHeader</span><span class="p">(</span><span class="s">"User-Agent"</span><span class="p">,</span> <span class="s">"Api client"</span><span class="p">)</span>
-                <span class="p">.</span><span class="na">addHeader</span><span class="p">(</span><span class="s">"Accept"</span><span class="p">,</span> <span class="n">mediaType</span><span class="p">)</span>
-                <span class="p">.</span><span class="na">addHeader</span><span class="p">(</span><span class="s">"Content-Type"</span><span class="p">,</span> <span class="n">mediaType</span><span class="p">)</span>
-                <span class="p">.</span><span class="na">addHeader</span><span class="p">(</span><span class="s">"Authorization"</span><span class="p">,</span> <span class="s">"Bearer "</span> <span class="o">+</span> <span class="n">token</span><span class="p">)</span>
-                <span class="p">.</span><span class="na">build</span><span class="p">();</span>
+        Request request = new Request.Builder()
+                .url(apiURL + "/api/ota/v1/accounts")
+                .addHeader("User-Agent", "Api client")
+                .addHeader("Accept", mediaType)
+                .addHeader("Content-Type", mediaType)
+                .addHeader("Authorization", "Bearer " + token)
+                .build();
 
-        <span class="n">Response</span> <span class="n">response</span> <span class="o">=</span> <span class="n">client</span><span class="p">.</span><span class="na">newCall</span><span class="p">(</span><span class="n">request</span><span class="p">).</span><span class="na">execute</span><span class="p">();</span>
-        <span class="kt">int</span> <span class="n">statusCode</span> <span class="o">=</span> <span class="n">response</span><span class="p">.</span><span class="na">code</span><span class="p">();</span>
+        Response response = client.newCall(request).execute();
+        int statusCode = response.code();
 
-        <span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">"Response Status Code: "</span> <span class="o">+</span> <span class="n">statusCode</span><span class="p">);</span>
+        System.out.println("Response Status Code: " + statusCode);
 
-        <span class="c1">// You can further process the response body here if needed</span>
-        <span class="n">String</span> <span class="n">responseBody</span> <span class="o">=</span> <span class="n">response</span><span class="p">.</span><span class="na">body</span><span class="p">().</span><span class="na">string</span><span class="p">();</span>
-        <span class="n">System</span><span class="p">.</span><span class="na">out</span><span class="p">.</span><span class="na">println</span><span class="p">(</span><span class="s">"Response Body: "</span> <span class="o">+</span> <span class="n">responseBody</span><span class="p">);</span>
-    <span class="p">}</span>
-<span class="p">}</span></code></pre>
+        // You can further process the response body here if needed
+        String responseBody = response.body().string();
+        System.out.println("Response Body: " + responseBody);
+    }
+}
+</code></pre>
 
 <p>Remember to replace <code>&lt;YOUR_TOKEN&gt;</code> and <code>&lt;API_URL&gt;</code> with your actual API token and URL. This Java code uses the OkHttp library to make HTTP requests, similar to how Excon and Faraday were used in the Ruby examples.</p>
 
@@ -211,33 +208,35 @@
 
 <h3 id="code-example-in-python">Code example in Python</h3>
 
-<pre><code class="language-python"><span class="kn">import</span> <span class="nn">requests</span>
+<pre><code class="language-python">import requests
 
-<span class="n">token</span> <span class="o">=</span> <span class="s2">"&lt;YOUR_TOKEN&gt;"</span>
-<span class="n">api_url</span> <span class="o">=</span> <span class="s2">"&lt;API_URL&gt;"</span>
-<span class="n">media_type</span> <span class="o">=</span> <span class="s2">"application/vnd.api+json"</span>
+token = "&lt;YOUR_TOKEN&gt;"
+api_url = "&lt;API_URL&gt;"
+media_type = "application/vnd.api+json"
 
-<span class="n">headers</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s2">"User-Agent"</span><span class="p">:</span> <span class="s2">"Api client"</span><span class="p">,</span>
-    <span class="s2">"Accept"</span><span class="p">:</span> <span class="n">media_type</span><span class="p">,</span>
-    <span class="s2">"Content-Type"</span><span class="p">:</span> <span class="n">media_type</span><span class="p">,</span>
-    <span class="s2">"Authorization"</span><span class="p">:</span> <span class="sa">f</span><span class="s2">"Bearer </span><span class="si">{</span><span class="n">token</span><span class="si">}</span><span class="s2">"</span>
-<span class="p">}</span>
+headers = {
+    "User-Agent": "Api client",
+    "Accept": media_type,
+    "Content-Type": media_type,
+    "Authorization": f"Bearer {token}"
+}
 
-<span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">api_url</span><span class="si">}</span><span class="s2">/api/ota/v1/accounts"</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">)</span>
-<span class="n">status_code</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span>
+response = requests.get(f"{api_url}/api/ota/v1/accounts", headers=headers)
+status_code = response.status_code
 
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Response Status Code: </span><span class="si">{</span><span class="n">status_code</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+print(f"Response Status Code: {status_code}")
 
-<span class="c1"># You can further process the response content here if needed</span>
-<span class="n">response_content</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">content</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Response Content: </span><span class="si">{</span><span class="n">response_content</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span></code></pre>
+# You can further process the response content here if needed
+response_content = response.content
+print(f"Response Content: {response_content}")
+</code></pre>
 
 <p>Replace <code>&lt;YOUR_TOKEN&gt;</code> and <code>&lt;API_URL&gt;</code> with your actual API token and URL. This Python code uses the requests library to make HTTP requests, similar to how the Ruby examples used Excon and Faraday.</p>
 
 <p>Make sure you have the <code>requests</code> library installed in your Python environment:</p>
 
-<pre><code class="language-bash">pip install requests</code></pre>
+<pre><code class="language-bash">pip install requests
+</code></pre>
 
 <h3 id="understanding-api-responses">Understanding API Responses</h3>
 
