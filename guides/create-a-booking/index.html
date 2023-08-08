@@ -1,0 +1,262 @@
+<!DOCTYPE HTML>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>BookingSync API documentation</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="/assets/stylesheets/application.css">
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400italic,400,700' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/highlight.css">
+    <script src="https://code.jquery.com/jquery-1.11.0.min.js"></script>
+    <script src="/assets/javascripts/application.js"></script>
+
+    <!-- you don't need to keep this, but it's cool for stats! -->
+    <meta name="generator" content="nanoc 3.8.0">
+  </head>
+  <body class="flex-col">
+    <div class="page-wrapper flex-1 flex-col">
+      <nav class="navbar navbar-default navbar-fixed-top" role="navigation">
+        <div class="container">
+          <div class="navbar-header">
+            <button type="button" class="navbar-toggle sidebar-toggle collapsed" data-toggle="collapse" data-target="#navigation" aria-expanded="false">
+              <span class="sr-only">Toggle navigation</span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">
+              <img alt="BookingSync" src="/images/bookingsync.svg">
+              <span>Developers</span>
+            </a>
+          </div>
+
+          <div class="collapse navbar-collapse" id="navigation">
+            <ul class="nav navbar-nav navbar-right">
+              <li class="active">
+                <a href="/guides/">Guides</a>
+              </li>
+              <li class="">
+                <a href="https://demo.platforms.bookingsync.com/api-docs/index.html" target="_blank">API Reference</a>
+              </li>
+              <li><a href="https://www.smily.com" target="_blank">Smily.com</a></li>
+              <li><a href="https://github.com/BookingSync/channel-api-docs" target="_blank"><i class="fa fa-github fa-fw fa-2x"></i></a></li>
+            </ul>
+          </div>
+        </div>
+      </nav>
+
+<div class="container content">
+  <div class="row">
+    <div class="col-md-3 col-md-push-9">
+      <div class="panel panel-default">
+        <div class="list-group">
+          <a class="list-group-item" href="/guides/api-overview">API overview</a>
+          <a class="list-group-item" href="/guides/getting-started">Getting Started</a>
+          <a class="list-group-item" href="/guides/accounts-synchronization">Accounts synchronization</a>
+          <a class="list-group-item" href="/guides/rentals-synchronization">Rentals synchronization</a>
+          <a class="list-group-item" href="/guides/create-a-booking-payments-on-partner-side">Create a booking (payments on partner side)</a>
+          <a class="list-group-item" href="/guides/create-a-booking-with-smily-payment-gateway">Create a booking (payments on our side)</a>
+          <a class="list-group-item" href="/guides/booking-cancelation">Booking cancelation</a>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-9 col-md-pull-3">
+      <div class="panel panel-default">
+        <div class="panel-body guide-body">
+          <h2 id="create-a-booking">Create a booking</h2>
+
+<p>TODO: Split into 2? When have own payment gateway and when don’t?</p>
+
+<ol id="markdown-toc">
+  <li><a href="#preface" id="markdown-toc-preface">Preface</a></li>
+  <li><a href="#create-a-quote" id="markdown-toc-create-a-quote">Create a quote</a></li>
+  <li><a href="#create-a-booking-1" id="markdown-toc-create-a-booking-1">Create a booking</a></li>
+  <li><a href="#create-a-payment" id="markdown-toc-create-a-payment">Create a payment</a></li>
+</ol>
+
+<h3 id="preface">Preface</h3>
+
+<p>This chapter explains the booking process.</p>
+
+<h3 id="create-a-quote">Create a quote</h3>
+
+<p>Before creating a booking, you have to confirm the price and availability of rental. To do that, you have to create a quote.</p>
+
+<pre><code class="language-ruby"><span class="n">token</span> <span class="o">=</span> <span class="s2">"&lt;YOUR_TOKEN&gt;"</span>
+<span class="n">api_url</span> <span class="o">=</span> <span class="s2">"&lt;API_URL&gt;"</span>
+<span class="n">media_type</span> <span class="o">=</span> <span class="s2">"application/vnd.api+json"</span>
+<span class="n">options</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="ss">headers</span><span class="p">:</span> <span class="p">{</span>
+    <span class="s2">"User-Agent"</span> <span class="o">=&gt;</span> <span class="s2">"Api client"</span><span class="p">,</span>
+    <span class="s2">"Accept"</span> <span class="o">=&gt;</span> <span class="n">media_type</span><span class="p">,</span>
+    <span class="s2">"Content-Type"</span> <span class="o">=&gt;</span> <span class="n">media_type</span><span class="p">,</span>
+    <span class="s2">"Authorization"</span> <span class="o">=&gt;</span> <span class="s2">"Bearer </span><span class="si">#{</span><span class="n">token</span><span class="si">}</span><span class="s2">"</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="n">request</span> <span class="o">=</span> <span class="no">Excon</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="no">URI</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">api_url</span><span class="p">,</span> <span class="s2">"/api/ota/v1/quotes"</span><span class="p">)</span><span class="o">.</span><span class="n">to_s</span><span class="p">,</span> <span class="n">options</span><span class="p">)</span>
+<span class="n">payload</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="ss">data</span><span class="p">:</span> <span class="p">{</span>
+    <span class="ss">attributes</span><span class="p">:</span> <span class="p">{</span>
+      <span class="s2">"start-at"</span><span class="p">:</span> <span class="s2">"2023-08-04"</span><span class="p">,</span>
+      <span class="s2">"end-at"</span><span class="p">:</span> <span class="s2">"2023-08-11"</span><span class="p">,</span>
+      <span class="s2">"adults"</span><span class="p">:</span> <span class="mi">20</span><span class="p">,</span>
+      <span class="s2">"children"</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+      <span class="s2">"rental-id"</span><span class="p">:</span> <span class="mi">428</span>
+    <span class="p">},</span>
+    <span class="ss">type</span><span class="p">:</span> <span class="s2">"quotes"</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+<span class="n">response</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">request</span><span class="p">({</span>
+  <span class="nb">method</span><span class="p">:</span> <span class="ss">:post</span><span class="p">,</span>
+  <span class="ss">body</span><span class="p">:</span> <span class="n">payload</span><span class="o">.</span><span class="n">to_json</span>
+<span class="p">})</span>
+
+<span class="n">json</span> <span class="o">=</span> <span class="no">JSON</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">body</span><span class="p">)</span>
+<span class="k">if</span> <span class="n">response</span><span class="o">.</span><span class="n">status</span> <span class="o">==</span> <span class="mi">201</span>
+  <span class="n">price</span> <span class="o">=</span> <span class="n">json</span><span class="o">[</span><span class="s2">"data"</span><span class="o">][</span><span class="s2">"attributes"</span><span class="o">][</span><span class="s2">"final-price"</span><span class="o">]</span>
+  <span class="n">booking_url</span> <span class="o">=</span> <span class="n">json</span><span class="o">[</span><span class="s2">"data"</span><span class="o">][</span><span class="s2">"attributes"</span><span class="o">][</span><span class="s2">"booking-url"</span><span class="o">]</span>
+  <span class="c1"># Now you can create booking via API or redirect user to booking_url</span>
+<span class="k">else</span>
+  <span class="n">handle_errors</span><span class="p">(</span><span class="n">json</span><span class="p">)</span>
+<span class="k">end</span></code></pre>
+
+<p>Quotes endpoint could return a 422 error. Response will be like that</p>
+
+<pre><code class="language-json"><span class="p">{</span>
+  <span class="nt">"errors"</span><span class="p">:[</span>
+    <span class="p">{</span>
+      <span class="nt">"title"</span><span class="p">:</span> <span class="s2">"period is not available for booking"</span><span class="p">,</span>
+      <span class="nt">"detail"</span><span class="p">:</span> <span class="s2">"start-at - period is not available for booking"</span><span class="p">,</span>
+      <span class="nt">"code"</span><span class="p">:</span> <span class="s2">"100"</span><span class="p">,</span>
+      <span class="nt">"source"</span><span class="p">:</span> <span class="p">{</span> <span class="nt">"pointer"</span><span class="p">:</span> <span class="s2">"/data/attributes/start-at"</span> <span class="p">},</span>
+      <span class="nt">"status"</span><span class="p">:</span> <span class="s2">"422"</span>
+    <span class="p">},</span>
+    <span class="p">{</span>
+      <span class="nt">"title"</span><span class="p">:</span> <span class="s2">"period is not available for booking"</span><span class="p">,</span>
+      <span class="nt">"detail"</span><span class="p">:</span> <span class="s2">"end-at - period is not available for booking"</span><span class="p">,</span>
+      <span class="nt">"code"</span><span class="p">:</span> <span class="s2">"100"</span><span class="p">,</span>
+      <span class="nt">"source"</span><span class="p">:</span> <span class="p">{</span> <span class="nt">"pointer"</span><span class="p">:</span> <span class="s2">"/data/attributes/end-at"</span> <span class="p">},</span>
+      <span class="nt">"status"</span><span class="p">:</span> <span class="s2">"422"</span>
+    <span class="p">}</span>
+  <span class="p">]</span>
+<span class="p">}</span></code></pre>
+
+<p>If you don’t have own payment gateway, you can just redirect user to <code>booking_url</code>. If you want to handle this order with own payment gateway, follow next instructions.</p>
+
+<h3 id="create-a-booking-1">Create a booking</h3>
+
+<p>Once you have successfully created a Quote, you can make a booking request. To do that you have to provide all information about the client, dates, rental ID and price.</p>
+
+<blockquote>
+  <p>Price should not be less than <code>final-price</code> you got from Quote request</p>
+</blockquote>
+
+<pre><code class="language-ruby"><span class="n">token</span> <span class="o">=</span> <span class="s2">"&lt;YOUR_TOKEN&gt;"</span>
+<span class="n">api_url</span> <span class="o">=</span> <span class="s2">"&lt;API_URL&gt;"</span>
+<span class="n">media_type</span> <span class="o">=</span> <span class="s2">"application/vnd.api+json"</span>
+<span class="n">options</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="ss">headers</span><span class="p">:</span> <span class="p">{</span>
+    <span class="s2">"User-Agent"</span> <span class="o">=&gt;</span> <span class="s2">"Api client"</span><span class="p">,</span>
+    <span class="s2">"Accept"</span> <span class="o">=&gt;</span> <span class="n">media_type</span><span class="p">,</span>
+    <span class="s2">"Content-Type"</span> <span class="o">=&gt;</span> <span class="n">media_type</span><span class="p">,</span>
+    <span class="s2">"Authorization"</span> <span class="o">=&gt;</span> <span class="s2">"Bearer </span><span class="si">#{</span><span class="n">token</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
+    <span class="s2">"Idempotency-Key"</span> <span class="o">=&gt;</span> <span class="n">get_order_uuid</span> <span class="c1"># optional but useful header, read comments below</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="n">request</span> <span class="o">=</span> <span class="no">Excon</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="no">URI</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">api_url</span><span class="p">,</span> <span class="s2">"/api/ota/v1/bookings"</span><span class="p">)</span><span class="o">.</span><span class="n">to_s</span><span class="p">,</span> <span class="n">options</span><span class="p">)</span>
+<span class="n">payload</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="ss">data</span><span class="p">:</span> <span class="p">{</span>
+    <span class="ss">attributes</span><span class="p">:</span> <span class="p">{</span>
+      <span class="s2">"start-at"</span><span class="p">:</span> <span class="s2">"2020-09-04T16:00:00.000Z"</span><span class="p">,</span> <span class="c1"># "2020-09-04" works too</span>
+      <span class="s2">"end-at"</span><span class="p">:</span> <span class="s2">"2020-09-11T10:00:00.000Z"</span><span class="p">,</span> <span class="c1"># "2020-09-11" works too</span>
+      <span class="s2">"adults"</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
+      <span class="s2">"children"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+      <span class="s2">"final-price"</span><span class="p">:</span> <span class="s2">"176.0"</span><span class="p">,</span>
+      <span class="s2">"currency"</span><span class="p">:</span> <span class="s2">"EUR"</span><span class="p">,</span>
+      <span class="s2">"rental-id"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+      <span class="s2">"client-first-name"</span><span class="p">:</span> <span class="s2">"Rich"</span><span class="p">,</span>
+      <span class="s2">"client-last-name"</span><span class="p">:</span> <span class="s2">"Piana"</span><span class="p">,</span>
+      <span class="s2">"client-email"</span><span class="p">:</span> <span class="s2">"rich@piana.com"</span><span class="p">,</span>
+      <span class="s2">"client-phone-number"</span><span class="p">:</span> <span class="s2">"123123123"</span><span class="p">,</span>
+      <span class="s2">"client-country-code"</span><span class="p">:</span> <span class="s2">"US"</span>
+    <span class="p">},</span>
+    <span class="ss">type</span><span class="p">:</span> <span class="s2">"quotes"</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+<span class="n">response</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">request</span><span class="p">({</span>
+  <span class="nb">method</span><span class="p">:</span> <span class="ss">:post</span><span class="p">,</span>
+  <span class="ss">body</span><span class="p">:</span> <span class="n">payload</span><span class="o">.</span><span class="n">to_json</span>
+<span class="p">})</span>
+
+<span class="n">json</span> <span class="o">=</span> <span class="no">JSON</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">body</span><span class="p">)</span>
+<span class="k">if</span> <span class="n">response</span><span class="o">.</span><span class="n">status</span> <span class="o">==</span> <span class="mi">201</span>
+  <span class="n">booking_id</span> <span class="o">=</span> <span class="n">json</span><span class="o">[</span><span class="s2">"data"</span><span class="o">][</span><span class="s2">"id"</span><span class="o">]</span>
+  <span class="c1"># save this booking id</span>
+<span class="k">else</span>
+  <span class="n">handle_errors</span><span class="p">(</span><span class="n">json</span><span class="p">)</span>
+<span class="k">end</span></code></pre>
+
+<p>TODO: confirm it
+If created booking has field <code>tentative-expires-at</code>, it means it could be canceled automatically if you won’t create any payment. So, as a next step, we have to create payments.</p>
+
+<p>We recommend to always set <code>Idempotency-Key</code> header. This header allow to avoid duplicates creation. For example if you tried to create a booking and because of network connection or some other error you could not get response, you can safely retry your request and get the correct response, because for a given key, every success response will be cached for 6 hours.
+We recommend to generate UUID for each order and use it in <code>Idempotency-Key</code> header.</p>
+
+<h3 id="create-a-payment">Create a payment</h3>
+
+<p>When you handled payment for the booking, you have to notify our us about that.</p>
+
+<pre><code class="language-ruby"><span class="n">token</span> <span class="o">=</span> <span class="s2">"&lt;YOUR_TOKEN&gt;"</span>
+<span class="n">api_url</span> <span class="o">=</span> <span class="s2">"&lt;API_URL&gt;"</span>
+<span class="n">media_type</span> <span class="o">=</span> <span class="s2">"application/vnd.api+json"</span>
+<span class="n">options</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="ss">headers</span><span class="p">:</span> <span class="p">{</span>
+    <span class="s2">"User-Agent"</span> <span class="o">=&gt;</span> <span class="s2">"Api client"</span><span class="p">,</span>
+    <span class="s2">"Accept"</span> <span class="o">=&gt;</span> <span class="n">media_type</span><span class="p">,</span>
+    <span class="s2">"Content-Type"</span> <span class="o">=&gt;</span> <span class="n">media_type</span><span class="p">,</span>
+    <span class="s2">"Authorization"</span> <span class="o">=&gt;</span> <span class="s2">"Bearer </span><span class="si">#{</span><span class="n">token</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span>
+    <span class="s2">"Idempotency-Key"</span> <span class="o">=&gt;</span> <span class="n">get_payment_uuid</span> <span class="c1"># optional but useful header, read comments below</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="n">request</span> <span class="o">=</span> <span class="no">Excon</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="no">URI</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">api_url</span><span class="p">,</span> <span class="s2">"/api/ota/v1/payments"</span><span class="p">)</span><span class="o">.</span><span class="n">to_s</span><span class="p">,</span> <span class="n">options</span><span class="p">)</span>
+<span class="n">payload</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="ss">data</span><span class="p">:</span> <span class="p">{</span>
+    <span class="ss">attributes</span><span class="p">:</span> <span class="p">{</span>
+      <span class="s2">"amount"</span><span class="p">:</span> <span class="s2">"100.0"</span><span class="p">,</span>
+      <span class="s2">"currency"</span><span class="p">:</span> <span class="s2">"EUR"</span><span class="p">,</span>
+      <span class="s2">"paid-at"</span><span class="p">:</span> <span class="s2">"2020-09-10T05:30:18.321Z"</span><span class="p">,</span>
+      <span class="s2">"kind"</span><span class="p">:</span> <span class="s2">"credit-card"</span><span class="p">,</span>
+      <span class="s2">"booking-id"</span><span class="p">:</span> <span class="n">booking_id</span>
+    <span class="p">},</span>
+    <span class="ss">type</span><span class="p">:</span> <span class="s2">"payments"</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+<span class="n">response</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">request</span><span class="p">({</span>
+  <span class="nb">method</span><span class="p">:</span> <span class="ss">:post</span><span class="p">,</span>
+  <span class="ss">body</span><span class="p">:</span> <span class="n">payload</span><span class="o">.</span><span class="n">to_json</span>
+<span class="p">})</span>
+
+<span class="n">json</span> <span class="o">=</span> <span class="no">JSON</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">body</span><span class="p">)</span>
+<span class="k">if</span> <span class="n">response</span><span class="o">.</span><span class="n">status</span> <span class="o">==</span> <span class="mi">201</span>
+  <span class="n">booking_id</span> <span class="o">=</span> <span class="n">json</span><span class="o">[</span><span class="s2">"data"</span><span class="o">][</span><span class="s2">"id"</span><span class="o">]</span>
+  <span class="c1"># save this booking id</span>
+<span class="k">else</span>
+  <span class="n">handle_errors</span><span class="p">(</span><span class="n">json</span><span class="p">)</span>
+<span class="k">end</span></code></pre>
+
+<p>Payments endpoint also support <code>Idempotency-Key</code> header. To ensure idempotent writes and frictionless integration, it is highly recommended to provide <code>Idempotency-Key</code> header. For a given key, every success response will be cached for 6 hours. Thanks to that, you can safely retry write operation.</p>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    </div>
+  </body>
+</html>
+

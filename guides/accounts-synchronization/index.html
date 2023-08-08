@@ -1,0 +1,264 @@
+<!DOCTYPE HTML>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>BookingSync API documentation</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="/assets/stylesheets/application.css">
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400italic,400,700' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/highlight.css">
+    <script src="https://code.jquery.com/jquery-1.11.0.min.js"></script>
+    <script src="/assets/javascripts/application.js"></script>
+
+    <!-- you don't need to keep this, but it's cool for stats! -->
+    <meta name="generator" content="nanoc 3.8.0">
+  </head>
+  <body class="flex-col">
+    <div class="page-wrapper flex-1 flex-col">
+      <nav class="navbar navbar-default navbar-fixed-top" role="navigation">
+        <div class="container">
+          <div class="navbar-header">
+            <button type="button" class="navbar-toggle sidebar-toggle collapsed" data-toggle="collapse" data-target="#navigation" aria-expanded="false">
+              <span class="sr-only">Toggle navigation</span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">
+              <img alt="BookingSync" src="/images/bookingsync.svg">
+              <span>Developers</span>
+            </a>
+          </div>
+
+          <div class="collapse navbar-collapse" id="navigation">
+            <ul class="nav navbar-nav navbar-right">
+              <li class="active">
+                <a href="/guides/">Guides</a>
+              </li>
+              <li class="">
+                <a href="https://demo.platforms.bookingsync.com/api-docs/index.html" target="_blank">API Reference</a>
+              </li>
+              <li><a href="https://www.smily.com" target="_blank">Smily.com</a></li>
+              <li><a href="https://github.com/BookingSync/channel-api-docs" target="_blank"><i class="fa fa-github fa-fw fa-2x"></i></a></li>
+            </ul>
+          </div>
+        </div>
+      </nav>
+
+<div class="container content">
+  <div class="row">
+    <div class="col-md-3 col-md-push-9">
+      <div class="panel panel-default">
+        <div class="list-group">
+          <a class="list-group-item" href="/guides/api-overview">API overview</a>
+          <a class="list-group-item" href="/guides/getting-started">Getting Started</a>
+          <a class="list-group-item" href="/guides/accounts-synchronization">Accounts synchronization</a>
+          <a class="list-group-item" href="/guides/rentals-synchronization">Rentals synchronization</a>
+          <a class="list-group-item" href="/guides/create-a-booking-payments-on-partner-side">Create a booking (payments on partner side)</a>
+          <a class="list-group-item" href="/guides/create-a-booking-with-smily-payment-gateway">Create a booking (payments on our side)</a>
+          <a class="list-group-item" href="/guides/booking-cancelation">Booking cancelation</a>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-9 col-md-pull-3">
+      <div class="panel panel-default">
+        <div class="panel-body guide-body">
+          <h2 id="accounts-synchronization">Accounts synchronization</h2>
+
+<ol id="markdown-toc">
+  <li><a href="#preface" id="markdown-toc-preface">Preface</a></li>
+  <li><a href="#get-all-accounts" id="markdown-toc-get-all-accounts">Get All Accounts</a></li>
+  <li><a href="#code-example-in-curl" id="markdown-toc-code-example-in-curl">Code example in cURL</a></li>
+  <li><a href="#code-example-in-ruby" id="markdown-toc-code-example-in-ruby">Code example in Ruby</a></li>
+  <li><a href="#code-example-in-python" id="markdown-toc-code-example-in-python">Code example in Python</a></li>
+  <li><a href="#code-example-in-java" id="markdown-toc-code-example-in-java">Code example in Java</a></li>
+</ol>
+
+<h3 id="preface">Preface</h3>
+
+<p>The Accounts endpoint enables partners to retrieve a list of accounts interested in publishing their listings on the partner’s website. Partners can use this endpoint to identify potential accounts for onboarding, which may involve signing contracts and other necessary steps.</p>
+
+<h3 id="get-all-accounts">Get All Accounts</h3>
+
+<p>Retrieve a list of accounts that wish to publish their listings on a partner’s website. Refer to the <a href="https://demo.platforms.bookingsync.com/api-docs/index.html">Swagger documentation</a> for detailed specifications.</p>
+
+<blockquote>
+  <p>Note: Pagination is not supported for this endpoint.</p>
+</blockquote>
+
+<blockquote>
+  <p>Important: If an account is no longer visible in the list, ensure to disable the corresponding account and rentals.</p>
+</blockquote>
+
+<blockquote>
+  <p>Recommendation: We suggest to do synchronization of accounts every 12-24 hours.</p>
+</blockquote>
+
+<h3 id="code-example-in-curl">Code example in cURL</h3>
+
+<pre><code class="language-bash"><span class="nv">TOKEN</span><span class="o">=</span><span class="s2">"&lt;YOUR_TOKEN&gt;"</span>
+<span class="nv">API_URL</span><span class="o">=</span><span class="s2">"&lt;API_URL&gt;"</span>
+
+curl -X GET <span class="se">\</span>
+  <span class="s2">"</span><span class="nv">$API_URL</span><span class="s2">/api/ota/v1/accounts"</span> <span class="se">\</span>
+  -H <span class="s2">"User-Agent: API Client"</span> <span class="se">\</span>
+  -H <span class="s2">"Accept: application/vnd.api+json"</span> <span class="se">\</span>
+  -H <span class="s2">"Content-Type: application/vnd.api+json"</span> <span class="se">\</span>
+  -H <span class="s2">"Authorization: Bearer </span><span class="nv">$TOKEN</span><span class="s2">"</span></code></pre>
+
+<h3 id="code-example-in-ruby">Code example in Ruby</h3>
+
+<pre><code class="language-ruby"><span class="nb">require</span> <span class="s1">'excon'</span>
+<span class="nb">require</span> <span class="s1">'json'</span>
+
+<span class="n">token</span> <span class="o">=</span> <span class="s2">"&lt;YOUR_TOKEN&gt;"</span>
+<span class="n">api_url</span> <span class="o">=</span> <span class="s2">"&lt;API_URL&gt;"</span>
+<span class="n">media_type</span> <span class="o">=</span> <span class="s2">"application/vnd.api+json"</span>
+<span class="n">options</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="ss">headers</span><span class="p">:</span> <span class="p">{</span>
+    <span class="s2">"User-Agent"</span> <span class="o">=&gt;</span> <span class="s2">"Api client"</span><span class="p">,</span>
+    <span class="s2">"Accept"</span> <span class="o">=&gt;</span> <span class="n">media_type</span><span class="p">,</span>
+    <span class="s2">"Content-Type"</span> <span class="o">=&gt;</span> <span class="n">media_type</span><span class="p">,</span>
+    <span class="s2">"Authorization"</span> <span class="o">=&gt;</span> <span class="s2">"Bearer </span><span class="si">#{</span><span class="n">token</span><span class="si">}</span><span class="s2">"</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+<span class="n">request</span> <span class="o">=</span> <span class="no">Excon</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="no">URI</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">api_url</span><span class="p">,</span> <span class="s2">"/api/ota/v1/accounts"</span><span class="p">)</span><span class="o">.</span><span class="n">to_s</span><span class="p">,</span> <span class="n">options</span><span class="p">)</span>
+<span class="n">response</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">request</span><span class="p">(</span><span class="nb">method</span><span class="p">:</span> <span class="ss">:get</span><span class="p">)</span>
+
+<span class="n">response</span><span class="o">.</span><span class="n">status</span>
+
+<span class="n">already_import_accounts_ids</span> <span class="o">=</span> <span class="n">get_imported_accounts_ids</span> <span class="c1"># get an array of already imported accounts, Ex result: [1,2,3]</span>
+
+<span class="n">json</span> <span class="o">=</span> <span class="no">JSON</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">body</span><span class="p">)</span>
+<span class="n">json</span><span class="o">[</span><span class="s2">"data"</span><span class="o">].</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">account</span><span class="o">|</span>
+  <span class="c1"># Import accounts</span>
+  <span class="n">import_account</span><span class="p">(</span><span class="n">account</span><span class="o">[</span><span class="s2">"id"</span><span class="o">]</span><span class="p">,</span> <span class="n">account</span><span class="o">[</span><span class="s2">"attributes"</span><span class="o">][</span><span class="s2">"name"</span><span class="o">]</span><span class="p">)</span>
+<span class="k">end</span>
+
+<span class="n">accounts_for_disabling</span> <span class="o">=</span> <span class="n">already_import_accounts_ids</span> <span class="o">-</span> <span class="n">json</span><span class="o">[</span><span class="s2">"data"</span><span class="o">].</span><span class="n">pluck</span><span class="p">(</span><span class="s2">"id"</span><span class="p">)</span>
+<span class="n">disable_accounts_and_rentals</span><span class="p">(</span><span class="n">accounts_for_disabling</span><span class="p">)</span> <span class="c1"># Disable accounts</span></code></pre>
+
+<p>Replace <code>&lt;YOUR_TOKEN&gt;</code> and <code>&lt;API_URL&gt;</code> with your specific authentication token and API URL in the provided example.</p>
+
+<h3 id="code-example-in-python">Code example in Python</h3>
+
+<pre><code class="language-python"><span class="kn">import</span> <span class="nn">requests</span>
+
+<span class="n">token</span> <span class="o">=</span> <span class="s2">"&lt;YOUR_TOKEN&gt;"</span>
+<span class="n">api_url</span> <span class="o">=</span> <span class="s2">"&lt;API_URL&gt;"</span>
+<span class="n">media_type</span> <span class="o">=</span> <span class="s2">"application/vnd.api+json"</span>
+<span class="n">headers</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">"User-Agent"</span><span class="p">:</span> <span class="s2">"API Client"</span><span class="p">,</span>
+    <span class="s2">"Accept"</span><span class="p">:</span> <span class="n">media_type</span><span class="p">,</span>
+    <span class="s2">"Content-Type"</span><span class="p">:</span> <span class="n">media_type</span><span class="p">,</span>
+    <span class="s2">"Authorization"</span><span class="p">:</span> <span class="sa">f</span><span class="s2">"Bearer </span><span class="si">{</span><span class="n">token</span><span class="si">}</span><span class="s2">"</span>
+<span class="p">}</span>
+<span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">api_url</span><span class="si">}</span><span class="s2">/api/ota/v1/accounts"</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">)</span>
+
+<span class="n">response_status</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span>
+
+<span class="c1"># Assuming you have a function to retrieve already imported account IDs: get_imported_accounts_ids</span>
+<span class="n">already_import_accounts_ids</span> <span class="o">=</span> <span class="n">get_imported_accounts_ids</span><span class="p">()</span>
+
+<span class="n">json_data</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+<span class="k">for</span> <span class="n">account</span> <span class="ow">in</span> <span class="n">json_data</span><span class="p">[</span><span class="s2">"data"</span><span class="p">]:</span>
+    <span class="c1"># Import accounts</span>
+    <span class="n">import_account</span><span class="p">(</span><span class="n">account</span><span class="p">[</span><span class="s2">"id"</span><span class="p">],</span> <span class="n">account</span><span class="p">[</span><span class="s2">"attributes"</span><span class="p">][</span><span class="s2">"name"</span><span class="p">])</span>
+
+<span class="n">accounts_for_disabling</span> <span class="o">=</span> <span class="p">[</span><span class="n">account_id</span> <span class="k">for</span> <span class="n">account_id</span> <span class="ow">in</span> <span class="n">already_import_accounts_ids</span> <span class="k">if</span> <span class="n">account_id</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="n">a</span><span class="p">[</span><span class="s2">"id"</span><span class="p">]</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">json_data</span><span class="p">[</span><span class="s2">"data"</span><span class="p">]]]</span>
+<span class="n">disable_accounts_and_rentals</span><span class="p">(</span><span class="n">accounts_for_disabling</span><span class="p">)</span>  <span class="c1"># Disable accounts</span></code></pre>
+
+<p>Please replace <code>&lt;YOUR_TOKEN&gt;</code> and <code>&lt;API_URL&gt;</code> with your actual authentication token and API URL in the Python code. Additionally, make sure you have the necessary functions <strong>get_imported_accounts_ids</strong>, <strong>import_account</strong>, and <strong>disable_accounts_and_rentals</strong> defined and implemented in your Python script.</p>
+
+<h3 id="code-example-in-java">Code example in Java</h3>
+
+<pre><code class="language-java"><span class="kn">import</span> <span class="nn">okhttp3.MediaType</span><span class="p">;</span>
+<span class="kn">import</span> <span class="nn">okhttp3.OkHttpClient</span><span class="p">;</span>
+<span class="kn">import</span> <span class="nn">okhttp3.Request</span><span class="p">;</span>
+<span class="kn">import</span> <span class="nn">okhttp3.Response</span><span class="p">;</span>
+<span class="kn">import</span> <span class="nn">org.json.JSONArray</span><span class="p">;</span>
+<span class="kn">import</span> <span class="nn">org.json.JSONObject</span><span class="p">;</span>
+
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">AccountSynchronization</span> <span class="p">{</span>
+
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="p">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">String</span> <span class="n">token</span> <span class="o">=</span> <span class="s">"&lt;YOUR_TOKEN&gt;"</span><span class="p">;</span>
+        <span class="n">String</span> <span class="n">api_url</span> <span class="o">=</span> <span class="s">"&lt;API_URL&gt;"</span><span class="p">;</span>
+        <span class="n">MediaType</span> <span class="n">mediaType</span> <span class="o">=</span> <span class="n">MediaType</span><span class="p">.</span><span class="na">parse</span><span class="p">(</span><span class="s">"application/vnd.api+json"</span><span class="p">);</span>
+
+        <span class="n">OkHttpClient</span> <span class="n">client</span> <span class="o">=</span> <span class="k">new</span> <span class="n">OkHttpClient</span><span class="p">();</span>
+
+        <span class="n">Request</span> <span class="n">request</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Request</span><span class="p">.</span><span class="na">Builder</span><span class="p">()</span>
+                <span class="p">.</span><span class="na">url</span><span class="p">(</span><span class="n">api_url</span> <span class="o">+</span> <span class="s">"/api/ota/v1/accounts"</span><span class="p">)</span>
+                <span class="p">.</span><span class="na">addHeader</span><span class="p">(</span><span class="s">"User-Agent"</span><span class="p">,</span> <span class="s">"API Client"</span><span class="p">)</span>
+                <span class="p">.</span><span class="na">addHeader</span><span class="p">(</span><span class="s">"Accept"</span><span class="p">,</span> <span class="n">mediaType</span><span class="p">.</span><span class="na">toString</span><span class="p">())</span>
+                <span class="p">.</span><span class="na">addHeader</span><span class="p">(</span><span class="s">"Content-Type"</span><span class="p">,</span> <span class="n">mediaType</span><span class="p">.</span><span class="na">toString</span><span class="p">())</span>
+                <span class="p">.</span><span class="na">addHeader</span><span class="p">(</span><span class="s">"Authorization"</span><span class="p">,</span> <span class="s">"Bearer "</span> <span class="o">+</span> <span class="n">token</span><span class="p">)</span>
+                <span class="p">.</span><span class="na">build</span><span class="p">();</span>
+
+        <span class="k">try</span> <span class="p">{</span>
+            <span class="n">Response</span> <span class="n">response</span> <span class="o">=</span> <span class="n">client</span><span class="p">.</span><span class="na">newCall</span><span class="p">(</span><span class="n">request</span><span class="p">).</span><span class="na">execute</span><span class="p">();</span>
+            <span class="kt">int</span> <span class="n">responseStatus</span> <span class="o">=</span> <span class="n">response</span><span class="p">.</span><span class="na">code</span><span class="p">();</span>
+
+            <span class="c1">// Assuming you have a function to retrieve already imported account IDs: getImportedAccountIds()</span>
+            <span class="n">JSONArray</span> <span class="n">alreadyImportAccountIds</span> <span class="o">=</span> <span class="n">getImportedAccountIds</span><span class="p">();</span>
+
+            <span class="n">JSONObject</span> <span class="n">responseBody</span> <span class="o">=</span> <span class="k">new</span> <span class="n">JSONObject</span><span class="p">(</span><span class="n">response</span><span class="p">.</span><span class="na">body</span><span class="p">().</span><span class="na">string</span><span class="p">());</span>
+            <span class="n">JSONArray</span> <span class="n">accounts</span> <span class="o">=</span> <span class="n">responseBody</span><span class="p">.</span><span class="na">getJSONArray</span><span class="p">(</span><span class="s">"data"</span><span class="p">);</span>
+
+            <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">accounts</span><span class="p">.</span><span class="na">length</span><span class="p">();</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+                <span class="n">JSONObject</span> <span class="n">account</span> <span class="o">=</span> <span class="n">accounts</span><span class="p">.</span><span class="na">getJSONObject</span><span class="p">(</span><span class="n">i</span><span class="p">);</span>
+                <span class="c1">// Import accounts</span>
+                <span class="n">importAccount</span><span class="p">(</span><span class="n">account</span><span class="p">.</span><span class="na">getInt</span><span class="p">(</span><span class="s">"id"</span><span class="p">),</span> <span class="n">account</span><span class="p">.</span><span class="na">getJSONObject</span><span class="p">(</span><span class="s">"attributes"</span><span class="p">).</span><span class="na">getString</span><span class="p">(</span><span class="s">"name"</span><span class="p">));</span>
+            <span class="p">}</span>
+
+            <span class="n">JSONArray</span> <span class="n">accountsForDisabling</span> <span class="o">=</span> <span class="k">new</span> <span class="n">JSONArray</span><span class="p">();</span>
+            <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">alreadyImportAccountIds</span><span class="p">.</span><span class="na">length</span><span class="p">();</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+                <span class="kt">int</span> <span class="n">accountId</span> <span class="o">=</span> <span class="n">alreadyImportAccountIds</span><span class="p">.</span><span class="na">getInt</span><span class="p">(</span><span class="n">i</span><span class="p">);</span>
+                <span class="kt">boolean</span> <span class="n">found</span> <span class="o">=</span> <span class="kc">false</span><span class="p">;</span>
+                <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">j</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">j</span> <span class="o">&lt;</span> <span class="n">accounts</span><span class="p">.</span><span class="na">length</span><span class="p">();</span> <span class="n">j</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+                    <span class="k">if</span> <span class="p">(</span><span class="n">accounts</span><span class="p">.</span><span class="na">getJSONObject</span><span class="p">(</span><span class="n">j</span><span class="p">).</span><span class="na">getInt</span><span class="p">(</span><span class="s">"id"</span><span class="p">)</span> <span class="o">==</span> <span class="n">accountId</span><span class="p">)</span> <span class="p">{</span>
+                        <span class="n">found</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+                        <span class="k">break</span><span class="p">;</span>
+                    <span class="p">}</span>
+                <span class="p">}</span>
+                <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">found</span><span class="p">)</span> <span class="p">{</span>
+                    <span class="n">accountsForDisabling</span><span class="p">.</span><span class="na">put</span><span class="p">(</span><span class="n">accountId</span><span class="p">);</span>
+                <span class="p">}</span>
+            <span class="p">}</span>
+            <span class="c1">// Disable accounts</span>
+            <span class="n">disableAccountsAndRentals</span><span class="p">(</span><span class="n">accountsForDisabling</span><span class="p">);</span>
+
+        <span class="p">}</span> <span class="k">catch</span> <span class="p">(</span><span class="n">Exception</span> <span class="n">e</span><span class="p">)</span> <span class="p">{</span>
+            <span class="n">e</span><span class="p">.</span><span class="na">printStackTrace</span><span class="p">();</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+
+    <span class="c1">// Define your functions here:</span>
+    <span class="kd">private</span> <span class="kd">static</span> <span class="n">JSONArray</span> <span class="nf">getImportedAccountIds</span><span class="p">()</span> <span class="p">{</span>
+        <span class="c1">// Implement your logic to get imported account IDs</span>
+        <span class="k">return</span> <span class="k">new</span> <span class="n">JSONArray</span><span class="p">();</span>
+    <span class="p">}</span>
+
+    <span class="kd">private</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">importAccount</span><span class="p">(</span><span class="kt">int</span> <span class="n">accountId</span><span class="p">,</span> <span class="n">String</span> <span class="n">accountName</span><span class="p">)</span> <span class="p">{</span>
+        <span class="c1">// Implement your logic to import accounts</span>
+    <span class="p">}</span>
+
+    <span class="kd">private</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">disableAccountsAndRentals</span><span class="p">(</span><span class="n">JSONArray</span> <span class="n">accountIds</span><span class="p">)</span> <span class="p">{</span>
+        <span class="c1">// Implement your logic to disable accounts and rentals</span>
+    <span class="p">}</span>
+<span class="p">}</span></code></pre>
+
+<p>Please replace <code>&lt;YOUR_TOKEN&gt;</code> and <code>&lt;API_URL&gt;</code> with your actual authentication token and API URL in the Java code. Additionally, implement the necessary functions <strong>getImportedAccountIds</strong>, <strong>importAccount</strong>, and <strong>disableAccountsAndRentals</strong> according to your requirements.</p>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    </div>
+  </body>
+</html>
+
