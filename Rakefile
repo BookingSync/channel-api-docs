@@ -24,7 +24,7 @@ def commit_message
   mesg.gsub(/'/, '') # Allow this to be handed off via -m '#{message}'
 end
 
-desc "Publish to http://docs.api.bookingsync.com"
+desc "Publish to https://channel-api.developers.bookingsync.com"
 task :publish => [:clean, :remove_output_dir] do
   mesg = commit_message
 
