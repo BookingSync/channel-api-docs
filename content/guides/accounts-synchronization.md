@@ -17,12 +17,12 @@ Retrieve a list of accounts that wish to publish their listings on a partner's w
 
 > Recommendation: We suggest to do synchronization of accounts every 12-24 hours.
 
+## Code examples
 
-## Code example in cURL
-
-~~~bash
-TOKEN="<YOUR_TOKEN>"
-API_URL="<API_URL>"
+| cURL | Ruby | Python | Java |
+----bash
+TOKEN="YOUR_TOKEN"
+API_URL="API_URL"
 
 curl -X GET \
   "$API_URL/api/ota/v1/accounts" \
@@ -30,16 +30,12 @@ curl -X GET \
   -H "Accept: application/vnd.api+json" \
   -H "Content-Type: application/vnd.api+json" \
   -H "Authorization: Bearer $TOKEN"
-~~~
-
-## Code example in Ruby
-
-~~~ruby
+----ruby
 require 'excon'
 require 'json'
 
-token = "<YOUR_TOKEN>"
-api_url = "<API_URL>"
+token = "YOUR_TOKEN"
+api_url = "API_URL"
 media_type = "application/vnd.api+json"
 options = {
   headers: {
@@ -64,17 +60,11 @@ end
 
 accounts_for_disabling = already_import_accounts_ids - json["data"].pluck("id")
 disable_accounts_and_rentals(accounts_for_disabling) # Disable accounts
-~~~
-
-Replace `<YOUR_TOKEN>` and `<API_URL>` with your specific authentication token and API URL in the provided example.
-
-## Code example in Python
-
-~~~python
+----python
 import requests
 
-token = "<YOUR_TOKEN>"
-api_url = "<API_URL>"
+token = "YOUR_TOKEN"
+api_url = "API_URL"
 media_type = "application/vnd.api+json"
 headers = {
     "User-Agent": "API Client",
@@ -96,13 +86,7 @@ for account in json_data["data"]:
 
 accounts_for_disabling = [account_id for account_id in already_import_accounts_ids if account_id not in [a["id"] for a in json_data["data"]]]
 disable_accounts_and_rentals(accounts_for_disabling)  # Disable accounts
-~~~
-
-Please replace `<YOUR_TOKEN>` and `<API_URL>` with your actual authentication token and API URL in the Python code. Additionally, make sure you have the necessary functions **get_imported_accounts_ids**, **import_account**, and **disable_accounts_and_rentals** defined and implemented in your Python script.
-
-## Code example in Java
-
-~~~java
+----java
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -113,8 +97,8 @@ import org.json.JSONObject;
 public class AccountSynchronization {
 
     public static void main(String[] args) {
-        String token = "<YOUR_TOKEN>";
-        String api_url = "<API_URL>";
+        String token = "YOUR_TOKEN";
+        String api_url = "API_URL";
         MediaType mediaType = MediaType.parse("application/vnd.api+json");
 
         OkHttpClient client = new OkHttpClient();
@@ -179,6 +163,8 @@ public class AccountSynchronization {
         // Implement your logic to disable accounts and rentals
     }
 }
-~~~
+--end--
 
-Please replace `<YOUR_TOKEN>` and `<API_URL>` with your actual authentication token and API URL in the Java code. Additionally, implement the necessary functions **getImportedAccountIds**, **importAccount**, and **disableAccountsAndRentals** according to your requirements.
+Please replace `YOUR_TOKEN` and `API_URL` with your actual authentication token and API URL in the Python code.
+
+Additionally, make sure you have the necessary functions **get_imported_accounts_ids**, **import_account**, and **disable_accounts_and_rentals** defined and implemented in your Python script.
