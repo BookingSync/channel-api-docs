@@ -430,49 +430,49 @@ Read more about [difference between rental price and final price](/guides/differ
 To effectively filter rentals by price, consider creating a table for LOS records and importing prices from CSV files into this table. We suggest the following table structure:
 
 ~~~sql
-CREATE TABLE public.eur_los_records_v5 (
+CREATE TABLE public.los_records (
     id uuid DEFAULT public.gen_random_uuid() NOT NULL,
-    synced_id bigint NOT NULL,
+    smily_id bigint NOT NULL,
     day date NOT NULL,
     min_occupancy integer,
     max_occupancy integer,
-    synced_rental_id bigint NOT NULL,
-    rates_eur numeric[] DEFAULT '{}'::numeric[],
+    smily_rental_id bigint NOT NULL,
+    rates numeric[] DEFAULT '{}'::numeric[],
     kind character varying,
-    synced_account_id bigint
+    smily_account_id bigint
 );
 ~~~
 
 **Sample ActiveRecord model for EUR LOS records**
 
 ~~~ruby
-class EurLosRecord < ApplicationRecord
+class LosRecord < ApplicationRecord
   # Helper scopes
   scope :by_occupancy, -> (occupancy) {
     occupancy.to_i > 0 ? where("max_occupancy >= ? AND min_occupancy <= ?", occupancy, occupancy) : by_default
   }
   scope :by_default, -> { where(min_occupancy: 1) }
   scope :by_date, -> (date) { where(day: date) }
-  scope :possible_to_stay_for, -> (length) { where("rates_eur[:length] IS NOT NULL", length: length) }
-  scope :by_min_max_price_eur, -> (length, min_price_eur, max_price_eur) {
-    by_min_price_eur(length, min_price_eur).by_max_price_eur(length, max_price_eur)
+  scope :possible_to_stay_for, -> (length) { where("rates[:length] IS NOT NULL", length: length) }
+  scope :by_min_max_price, -> (length, min_price, max_price) {
+    by_min_price(length, min_price).by_max_price(length, max_price)
   }
-  scope :by_min_price_eur, -> (length, min_price_eur) {
-    if min_price_eur.present?
-      where("rates_eur[:length] >= :min_price_eur", length: length, min_price_eur: min_price_eur)
+  scope :by_min_price, -> (length, min_price) {
+    if min_price.present?
+      where("rates[:length] >= :min_price", length: length, min_price: min_price)
     end
   }
-  scope :by_max_price_eur, -> (length, max_price_eur) {
-    if max_price_eur.present?
-      where("rates_eur[:length] <= :max_price_eur", length: length, max_price_eur: max_price_eur)
+  scope :by_max_price, -> (length, max_price) {
+    if max_price.present?
+      where("rates[:length] <= :max_price", length: length, max_price: max_price)
     end
   }
   # The main search scope
-  scope :by_occupancy_date_rate_price, ->(occupancy, date, length, min_price_eur, max_price_eur, los_kind = nil) {
+  scope :by_occupancy_date_rate_price, ->(occupancy, date, length, min_price, max_price, los_kind = nil) {
     scope = by_occupancy(occupancy).by_date(date)
     scope = scope.by_kind(los_kind) if los_kind.present?
     scope.possible_to_stay_for(length)
-      .by_min_max_price_eur(length, min_price_eur, max_price_eur)
+      .by_min_max_price(length, min_price, max_price)
   }
 end
 ~~~
@@ -483,6 +483,6 @@ In controller you can use this scope to filter rentals:
   # `by_availabilities` scope was described above
   @rentals = Rental.by_availabilities(params[:date], params[:length])
   @rentals = @rentals
-    .joins(:eur_los_records)
-    .merge(EurLosRecord.by_occupancy_date_rate_price(params[:occupancy], params[:date], params[:length], params[:min_price], params[:max_price]))
+    .joins(:los_records)
+    .merge(LosRecord.by_occupancy_date_rate_price(params[:occupancy], params[:date], params[:length], params[:min_price], params[:max_price]))
 ~~~
