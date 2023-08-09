@@ -28,7 +28,7 @@
               <span class="icon-bar"></span>
             </button>
             <a class="navbar-brand" href="/">
-              <img alt="BookingSync" src="/images/bookingsync.svg">
+              <img alt="BookingSync" src="/images/smily-logo.png">
               <span>Developers</span>
             </a>
           </div>
@@ -53,13 +53,13 @@
     <div class="col-md-3 col-md-push-9">
       <div class="panel panel-default">
         <div class="list-group">
-          <a class="list-group-item" href="/guides/api-overview">API overview</a>
-          <a class="list-group-item" href="/guides/getting-started">Getting Started</a>
-          <a class="list-group-item" href="/guides/accounts-synchronization">Accounts synchronization</a>
-          <a class="list-group-item" href="/guides/rentals-synchronization">Rentals synchronization</a>
-          <a class="list-group-item" href="/guides/create-a-booking-payments-on-partner-side">Create a booking (payments on partner side)</a>
-          <a class="list-group-item" href="/guides/create-a-booking-with-smily-payment-gateway">Create a booking (payments on our side)</a>
-          <a class="list-group-item" href="/guides/booking-cancelation">Booking cancelation</a>
+          <a class="list-group-item" href="/guides/">API overview</a>
+          <a class="list-group-item" href="/guides/getting-started/">Getting Started</a>
+          <a class="list-group-item" href="/guides/accounts-synchronization/">Accounts synchronization</a>
+          <a class="list-group-item" href="/guides/rentals-synchronization/">Rentals synchronization</a>
+          <a class="list-group-item" href="/guides/create-a-booking-payments-on-partner-side/">Create a booking (payments on partner side)</a>
+          <a class="list-group-item" href="/guides/create-a-booking-with-smily-payment-gateway/">Create a booking (payments on our side)</a>
+          <a class="list-group-item active" href="/guides/booking-cancelation/">Booking cancelation</a>
         </div>
       </div>
     </div>
@@ -71,7 +71,6 @@
 <ol id="markdown-toc">
   <li><a href="#preface" id="markdown-toc-preface">Preface</a></li>
   <li><a href="#booking-cancellation-process" id="markdown-toc-booking-cancellation-process">Booking Cancellation Process</a></li>
-  <li><a href="#possible-validation-error" id="markdown-toc-possible-validation-error">Possible Validation Error</a></li>
 </ol>
 
 <h3 id="preface">Preface</h3>
@@ -279,25 +278,6 @@ public class CancelBooking {
         }
     }
 }</code></pre></div></div></div>
-
-<h3 id="possible-validation-error">Possible Validation Error</h3>
-
-<p>In case of a validation error, the response will resemble the following:</p>
-
-<pre><code class="language-js">  {
-    "errors" =&gt; [
-      {
-        "code" =&gt; "100",
-        "detail" =&gt; "currency - provided currency for cancelation must be the same as the one from booking",
-        "source" =&gt; {
-          "pointer" =&gt; "/data/attributes/currency"
-        },
-        "status" =&gt; "422",
-        "title" =&gt; "provided currency for cancelation must be the same as the one from booking"
-      }
-    ]
-  }
-</code></pre>
 
         </div>
       </div>

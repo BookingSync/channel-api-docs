@@ -28,7 +28,7 @@
               <span class="icon-bar"></span>
             </button>
             <a class="navbar-brand" href="/">
-              <img alt="BookingSync" src="/images/bookingsync.svg">
+              <img alt="BookingSync" src="/images/smily-logo.png">
               <span>Developers</span>
             </a>
           </div>
@@ -53,13 +53,13 @@
     <div class="col-md-3 col-md-push-9">
       <div class="panel panel-default">
         <div class="list-group">
-          <a class="list-group-item" href="/guides/api-overview">API overview</a>
-          <a class="list-group-item" href="/guides/getting-started">Getting Started</a>
-          <a class="list-group-item" href="/guides/accounts-synchronization">Accounts synchronization</a>
-          <a class="list-group-item" href="/guides/rentals-synchronization">Rentals synchronization</a>
-          <a class="list-group-item" href="/guides/create-a-booking-payments-on-partner-side">Create a booking (payments on partner side)</a>
-          <a class="list-group-item" href="/guides/create-a-booking-with-smily-payment-gateway">Create a booking (payments on our side)</a>
-          <a class="list-group-item" href="/guides/booking-cancelation">Booking cancelation</a>
+          <a class="list-group-item" href="/guides/">API overview</a>
+          <a class="list-group-item" href="/guides/getting-started/">Getting Started</a>
+          <a class="list-group-item" href="/guides/accounts-synchronization/">Accounts synchronization</a>
+          <a class="list-group-item" href="/guides/rentals-synchronization/">Rentals synchronization</a>
+          <a class="list-group-item active" href="/guides/create-a-booking-payments-on-partner-side/">Create a booking (payments on partner side)</a>
+          <a class="list-group-item" href="/guides/create-a-booking-with-smily-payment-gateway/">Create a booking (payments on our side)</a>
+          <a class="list-group-item" href="/guides/booking-cancelation/">Booking cancelation</a>
         </div>
       </div>
     </div>
@@ -448,7 +448,7 @@ public class BookingCreation {
 }</code></pre></div></div></div>
 
 <blockquote>
-  <p><strong>Note:</strong> If a created booking includes the not null <code>tentative-expires-at</code> field, it may be automatically canceled if no payment is made. Therefore, it’s essential to proceed with payment creation.</p>
+  <p><strong>Important:</strong> Every booking has a tentative-expires-at field, which is set to expire 10 minutes after the booking’s creation. If no payment is made within this window, the booking will be automatically canceled by our system. This duration can be extended upon request.</p>
 </blockquote>
 
 <p>We strongly recommend setting the <code>Idempotency-Key</code> header to prevent duplicate creations. Generate a UUID for each order and use it as the <code>Idempotency-Key</code>.</p>

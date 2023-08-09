@@ -28,7 +28,7 @@
               <span class="icon-bar"></span>
             </button>
             <a class="navbar-brand" href="/">
-              <img alt="BookingSync" src="/images/bookingsync.svg">
+              <img alt="BookingSync" src="/images/smily-logo.png">
               <span>Developers</span>
             </a>
           </div>
@@ -53,13 +53,13 @@
     <div class="col-md-3 col-md-push-9">
       <div class="panel panel-default">
         <div class="list-group">
-          <a class="list-group-item" href="/guides/api-overview">API overview</a>
-          <a class="list-group-item" href="/guides/getting-started">Getting Started</a>
-          <a class="list-group-item" href="/guides/accounts-synchronization">Accounts synchronization</a>
-          <a class="list-group-item" href="/guides/rentals-synchronization">Rentals synchronization</a>
-          <a class="list-group-item" href="/guides/create-a-booking-payments-on-partner-side">Create a booking (payments on partner side)</a>
-          <a class="list-group-item" href="/guides/create-a-booking-with-smily-payment-gateway">Create a booking (payments on our side)</a>
-          <a class="list-group-item" href="/guides/booking-cancelation">Booking cancelation</a>
+          <a class="list-group-item" href="/guides/">API overview</a>
+          <a class="list-group-item" href="/guides/getting-started/">Getting Started</a>
+          <a class="list-group-item" href="/guides/accounts-synchronization/">Accounts synchronization</a>
+          <a class="list-group-item active" href="/guides/rentals-synchronization/">Rentals synchronization</a>
+          <a class="list-group-item" href="/guides/create-a-booking-payments-on-partner-side/">Create a booking (payments on partner side)</a>
+          <a class="list-group-item" href="/guides/create-a-booking-with-smily-payment-gateway/">Create a booking (payments on our side)</a>
+          <a class="list-group-item" href="/guides/booking-cancelation/">Booking cancelation</a>
         </div>
       </div>
     </div>
@@ -238,15 +238,12 @@ public class AccountSynchronization {
 
 <p>To optimize the retrieval process, it’s recommended to use the fields parameter when fetching rental data. By specifying <code>fields[rentals]=availability</code>, you can streamline the API response to include only the necessary availability information, improving efficiency.</p>
 
-<!-- TODO: choose approach 1 or approach 2 -->
-
 <h4 id="code-examples-1">Code Examples</h4>
 
 <div class="tabbable"><ul class="nav nav-tabs"><li class="active"><a data-toggle="tab" href="#content-2-0">cURL</a></li>
-<li class=""><a data-toggle="tab" href="#content-2-1">Ruby 1</a></li>
-<li class=""><a data-toggle="tab" href="#content-2-2">Ruby 2</a></li>
-<li class=""><a data-toggle="tab" href="#content-2-3">Python</a></li>
-<li class=""><a data-toggle="tab" href="#content-2-4">Java</a></li></ul><div class="tab-content"><div id="content-2-0" class="tab-pane fade in active"><pre><code class="language-bash">TOKEN="YOUR_TOKEN"
+<li class=""><a data-toggle="tab" href="#content-2-1">Ruby</a></li>
+<li class=""><a data-toggle="tab" href="#content-2-2">Python</a></li>
+<li class=""><a data-toggle="tab" href="#content-2-3">Java</a></li></ul><div class="tab-content"><div id="content-2-0" class="tab-pane fade in active"><pre><code class="language-bash">TOKEN="YOUR_TOKEN"
 API_URL="API_URL"
 ACCOUNT_ID="ACCOUNT_ID"
 
@@ -256,8 +253,7 @@ curl -X GET \
   -H "Accept: application/vnd.api+json" \
   -H "Content-Type: application/vnd.api+json" \
   -H "Authorization: Bearer $TOKEN"</code></pre></div>
-<div id="content-2-1" class="tab-pane fade in "><pre><code class="language-ruby"># Approach 1: Fetch batches. No beautiful, but more effective
-token = "YOUR_TOKEN"
+<div id="content-2-1" class="tab-pane fade in "><pre><code class="language-ruby">token = "YOUR_TOKEN"
 api_url = "API_URL"
 media_type = "application/vnd.api+json"
 options = {
@@ -288,32 +284,7 @@ Account.approved.each do |account|
   end
   disable_rentals(account_rentals_ids)
 end</code></pre></div>
-<div id="content-2-2" class="tab-pane fade in "><pre><code class="language-ruby"># Approach 2: Better code, but less effective
-token = "YOUR_TOKEN"
-api_url = "API_URL"
-media_type = "application/vnd.api+json"
-options = {
-  headers: {
-    "User-Agent" =&gt; "Api client",
-    "Accept" =&gt; media_type,
-    "Content-Type" =&gt; media_type,
-    "Authorization" =&gt; "Bearer #{token}"
-  }
-}
-
-Rental.each do |rental|
-  request = Excon.new(URI.join(api_url, "/api/ota/v1/rentals/#{rental.remote_id}&amp;fields[rentals]=availability").to_s, options)
-
-  response = request.request({ method: :get })
-  if response.code == 200
-    json = JSON.parse(response.body)
-    update_rental_availability(rental["data"]["attributes"]["availability"])
-    make_rental_visible_if_was_hidden(rental)
-  else
-    hide_rental(rental)
-  end
-end</code></pre></div>
-<div id="content-2-3" class="tab-pane fade in "><pre><code class="language-python">import requests
+<div id="content-2-2" class="tab-pane fade in "><pre><code class="language-python">import requests
 import json
 
 token = "YOUR_TOKEN"
@@ -350,7 +321,7 @@ for account in approved_accounts:
 
     # Assuming you have a function to disable rentals: disable_rentals(account_rentals_ids)
     disable_rentals(account_rentals_ids)</code></pre></div>
-<div id="content-2-4" class="tab-pane fade in "><pre><code class="language-java">import okhttp3.*;
+<div id="content-2-3" class="tab-pane fade in "><pre><code class="language-java">import okhttp3.*;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -491,11 +462,12 @@ CSV files look like:</p>
   <li><strong>final_price</strong> - Price including all required fees and taxes.</li>
 </ol>
 
-<p>If you want to avoid price discrepancy, you have to use <strong>rental_price</strong> and apply all the fees and taxes on your side. Otherwise just use <strong>final_price</strong>.
-Read more about <a href="/guides/difference-between-rental-price-and-final-price/">difference between rental price and final price</a>.</p>
+<p>We strongly advise using the LOS <strong>final_price</strong>. Although this might lead to a discrepancy between the <strong>search_price</strong> and the <strong>booking_price</strong>, such variance is permissible within our system. We anticipate that the <strong>booking_price</strong> will not be lower than that stated in the quote request; however, it might be higher.</p>
+
+<p>To avoid any such price discrepancy, you have the option to utilize the <strong>rental_price</strong> and apply all fees and taxes on your end. For an in-depth understanding of handling fees and taxes, please refer to our comprehensive guides on <a href="https://manual.bookingsync.com/hc/en-us/articles/360005323933-Fees-Services">Fees &amp; Services</a> and <a href="https://manual.bookingsync.com/hc/en-us/articles/360005323693-Apply-a-new-tax#3">Applying a New Tax</a>.</p>
 
 <blockquote>
-  <p>Recommendation: We update LOS files every 12 hours.</p>
+  <p>Note: We update LOS files every 12 hours.</p>
 </blockquote>
 
 <h3 id="filtering-rentals-by-price">Filtering Rentals by Price</h3>
@@ -515,9 +487,21 @@ Read more about <a href="/guides/difference-between-rental-price-and-final-price
 );
 </code></pre>
 
-<p><strong>Sample ActiveRecord model for EUR LOS records</strong></p>
+<p><strong>Filtering LOS records</strong></p>
 
-<pre><code class="language-ruby">class LosRecord &lt; ApplicationRecord
+<div class="tabbable"><ul class="nav nav-tabs"><li class="active"><a data-toggle="tab" href="#content-4-0">SQL</a></li>
+<li class=""><a data-toggle="tab" href="#content-4-1">Ruby On Rails</a></li></ul><div class="tab-content"><div id="content-4-0" class="tab-pane fade in active"><pre><code class="language-sql">SELECT * FROM los_records
+WHERE
+  (min_occupancy = 1 OR (max_occupancy &gt;= :occupancy AND min_occupancy &lt;= :occupancy))
+  AND day = :date
+  AND rates -&gt; :length IS NOT NULL
+  AND
+  (
+    (rates -&gt; :length &gt;= :min_price OR :min_price IS NULL)
+    AND
+    (rates -&gt; :length &lt;= :max_price OR :max_price IS NULL)
+  );</code></pre></div>
+<div id="content-4-1" class="tab-pane fade in "><pre><code class="language-ruby">class LosRecord &lt; ApplicationRecord
   # Helper scopes
   scope :by_occupancy, -&gt; (occupancy) {
     occupancy.to_i &gt; 0 ? where("max_occupancy &gt;= ? AND min_occupancy &lt;= ?", occupancy, occupancy) : by_default
@@ -545,17 +529,20 @@ Read more about <a href="/guides/difference-between-rental-price-and-final-price
     scope.possible_to_stay_for(length)
       .by_min_max_price(length, min_price, max_price)
   }
+
+  scope :by_availabilities, -&gt;(date, length) {
+    unavailable_status = '1'
+    start_point = "DATE_PART('day', TIMESTAMP :date - availability_start_date)::integer+1"
+    availability_to_check_sql = "SUBSTR(availability_map, #{start_point}, :length_of_stay)"
+    where("#{availability_to_check_sql} NOT SIMILAR TO :check_statuses", date: date, length_of_stay: length, check_statuses: unavailable_status)
+  }
 end
-</code></pre>
 
-<p>In controller you can use this scope to filter rentals:</p>
-
-<pre><code class="language-ruby">  # `by_availabilities` scope was described above
-  @rentals = Rental.by_availabilities(params[:date], params[:length])
-  @rentals = @rentals
-    .joins(:los_records)
-    .merge(LosRecord.by_occupancy_date_rate_price(params[:occupancy], params[:date], params[:length], params[:min_price], params[:max_price]))
-</code></pre>
+# In controller you can use this scope to filter rentals (`by_availabilities` scope was described above):
+@rentals = Rental.by_availabilities(params[:date], params[:length])
+@rentals = @rentals
+  .joins(:los_records)
+  .merge(LosRecord.by_occupancy_date_rate_price(params[:occupancy], params[:date], params[:length], params[:min_price], params[:max_price]))</code></pre></div></div></div>
 
         </div>
       </div>
