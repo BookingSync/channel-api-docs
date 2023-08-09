@@ -167,4 +167,4 @@ public class AccountSynchronization {
 
 Please replace `YOUR_TOKEN` and `API_URL` with your actual authentication token and API URL in the Python code.
 
-Additionally, make sure you have the necessary functions **get_imported_accounts_ids**, **import_account**, and **disable_accounts_and_rentals** defined and implemented in your Python script.
+Additionally, make sure you have the necessary functions **get_imported_accounts_ids/getImportedAccountIds**, **import_account/importAccount**, and **disable_accounts_and_rentals/disableAccountsAndRentals** defined.
