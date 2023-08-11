@@ -29,12 +29,12 @@ Your API call should include the following components:
 Copy the following cURL example to make your first API call, which retrieves all [accounts](https://demo.platforms.bookingsync.com/api-docs/index.html) interested in publishing listings on your website:
 
 ~~~bash
-curl -i -X 'GET' '<HOST>/api/ota/v1/accounts' -H 'accept: application/vnd.api+json' -H 'Authorization: Bearer <API_KEY>'
+curl -i -X 'GET' 'HOST/api/ota/v1/accounts' -H 'accept: application/vnd.api+json' -H 'Authorization: Bearer API_KEY'
 ~~~
 
   1. Copy the cURL example above.
   2. Paste the curl call into your favorite text editor.
-  3. Replace **<API_KEY>** with your actual API key and **<HOST>** with your host details.
+  3. Replace **API_KEY** with your actual API key and **HOST** with your host details.
   4. Copy the updated cURL command and paste it into your terminal.
   5. Press **Enter** to execute the request.
   6. A successful response with status **HTTP/2 200** indicates correct setup.
@@ -46,8 +46,8 @@ curl -i -X 'GET' '<HOST>/api/ota/v1/accounts' -H 'accept: application/vnd.api+js
 ~~~ruby
 require 'excon'
 
-token = "<YOUR_TOKEN>"
-api_url = "<API_URL>"
+token = "YOUR_TOKEN"
+api_url = "API_URL"
 media_type = "application/vnd.api+json"
 options = {
   headers: {
@@ -68,8 +68,8 @@ Using [Faraday](https://github.com/lostisland/faraday) Library
 ~~~ruby
 require 'faraday'
 
-token = "<YOUR_TOKEN>"
-api_url = "<API_URL>"
+token = "YOUR_TOKEN"
+api_url = "API_URL"
 media_type = "application/vnd.api+json"
 
 request = Faraday.new({ ssl: { verify: true } }) do |f|
@@ -96,8 +96,8 @@ import okhttp3.Response;
 public class SmilyChannelApiExample {
 
     public static void main(String[] args) throws IOException {
-        String token = "<YOUR_TOKEN>";
-        String apiURL = "<API_URL>";
+        String token = "YOUR_TOKEN";
+        String apiURL = "API_URL";
         String mediaType = "application/vnd.api+json";
 
         OkHttpClient client = new OkHttpClient();
@@ -122,7 +122,7 @@ public class SmilyChannelApiExample {
 }
 ~~~
 
-Remember to replace `<YOUR_TOKEN>` and `<API_URL>` with your actual API token and URL. This Java code uses the OkHttp library to make HTTP requests, similar to how Excon and Faraday were used in the Ruby examples.
+Remember to replace `YOUR_TOKEN` and `API_URL` with your actual API token and URL. This Java code uses the OkHttp library to make HTTP requests, similar to how Excon and Faraday were used in the Ruby examples.
 
 Make sure you have the OkHttp library added to your Java project's dependencies.
 
@@ -133,8 +133,8 @@ Feel free to adapt this Java code to your project's structure and error handling
 ~~~python
 import requests
 
-token = "<YOUR_TOKEN>"
-api_url = "<API_URL>"
+token = "YOUR_TOKEN"
+api_url = "API_URL"
 media_type = "application/vnd.api+json"
 
 headers = {
@@ -154,7 +154,7 @@ response_content = response.content
 print(f"Response Content: {response_content}")
 ~~~
 
-Replace `<YOUR_TOKEN>` and `<API_URL>` with your actual API token and URL. This Python code uses the requests library to make HTTP requests, similar to how the Ruby examples used Excon and Faraday.
+Replace `YOUR_TOKEN` and `API_URL` with your actual API token and URL. This Python code uses the requests library to make HTTP requests, similar to how the Ruby examples used Excon and Faraday.
 
 Make sure you have the `requests` library installed in your Python environment:
 
