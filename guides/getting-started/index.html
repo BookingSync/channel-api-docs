@@ -73,9 +73,7 @@
   <li><a href="#prerequisites" id="markdown-toc-prerequisites">Prerequisites</a></li>
   <li><a href="#making-your-first-api-call" id="markdown-toc-making-your-first-api-call">Making Your First API Call</a></li>
   <li><a href="#sample-curl-request" id="markdown-toc-sample-curl-request">Sample cURL Request</a></li>
-  <li><a href="#code-examples-in-ruby" id="markdown-toc-code-examples-in-ruby">Code Examples in Ruby</a></li>
-  <li><a href="#code-example-in-java" id="markdown-toc-code-example-in-java">Code example in Java</a></li>
-  <li><a href="#code-example-in-python" id="markdown-toc-code-example-in-python">Code example in Python</a></li>
+  <li><a href="#code-examples" id="markdown-toc-code-examples">Code Examples</a></li>
   <li><a href="#understanding-api-responses" id="markdown-toc-understanding-api-responses">Understanding API Responses</a></li>
 </ol>
 
@@ -120,12 +118,14 @@
   <li>A successful response with status <strong>HTTP/2 200</strong> indicates correct setup.</li>
 </ol>
 
-<h3 id="code-examples-in-ruby">Code Examples in Ruby</h3>
+<h3 id="code-examples">Code Examples</h3>
 
-<h4 id="using-exconhttpsgithubcomexconexcon-library">Using <a href="https://github.com/excon/excon">Excon</a> Library</h4>
+<div class="tabbable"><ul class="nav nav-tabs"><li class="active"><a data-toggle="tab" href="#content-1-0">Ruby (Excon)</a></li>
+<li class=""><a data-toggle="tab" href="#content-1-1">Ruby (Faraday)</a></li>
+<li class=""><a data-toggle="tab" href="#content-1-2">Python</a></li>
+<li class=""><a data-toggle="tab" href="#content-1-3">Java</a></li></ul><div class="tab-content"><div id="content-1-0" class="tab-pane fade in active"><pre><code class="language-ruby">require 'excon' # https://github.com/excon/excon
 
-<pre><code class="language-ruby">require 'excon'
-
+# Remember to replace `YOUR_TOKEN` and `API_URL` with your actual API token and URL
 token = "YOUR_TOKEN"
 api_url = "API_URL"
 media_type = "application/vnd.api+json"
@@ -140,13 +140,10 @@ options = {
 request = Excon.new(URI.join(api_url, "/api/ota/v1/accounts").to_s, options)
 response = request.request({ method: :get })
 
-response.status
-</code></pre>
+response.status</code></pre></div>
+<div id="content-1-1" class="tab-pane fade in "><pre><code class="language-ruby">require 'faraday' # https://github.com/lostisland/faraday
 
-<p>Using <a href="https://github.com/lostisland/faraday">Faraday</a> Library</p>
-
-<pre><code class="language-ruby">require 'faraday'
-
+# Remember to replace `YOUR_TOKEN` and `API_URL` with your actual API token and URL
 token = "YOUR_TOKEN"
 api_url = "API_URL"
 media_type = "application/vnd.api+json"
@@ -161,12 +158,33 @@ request.headers[:authorization] = "Bearer #{token}"
 request.url_prefix = api_url
 response = request.send(:get, "/api/ota/v1/accounts")
 
-response.status
-</code></pre>
+response.status</code></pre></div>
+<div id="content-1-2" class="tab-pane fade in "><pre><code class="language-python"># Make sure you have the `requests` library installed in your Python environment
+import requests
 
-<h3 id="code-example-in-java">Code example in Java</h3>
+# Remember to replace `YOUR_TOKEN` and `API_URL` with your actual API token and URL
+token = "YOUR_TOKEN"
+api_url = "API_URL"
+media_type = "application/vnd.api+json"
 
-<pre><code class="language-java">import java.io.IOException;
+headers = {
+    "User-Agent": "Api client",
+    "Accept": media_type,
+    "Content-Type": media_type,
+    "Authorization": f"Bearer {token}"
+}
+
+response = requests.get(f"{api_url}/api/ota/v1/accounts", headers=headers)
+status_code = response.status_code
+
+print(f"Response Status Code: {status_code}")
+
+# You can further process the response content here if needed
+response_content = response.content
+print(f"Response Content: {response_content}")</code></pre></div>
+<div id="content-1-3" class="tab-pane fade in "><pre><code class="language-java">// Make sure you have the OkHttp library added to your Java project's dependencies.
+// Feel free to adapt this Java code to your project's structure and error handling needs. This example demonstrates making a GET request, and you can build upon it for other types of requests as well.
+import java.io.IOException;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
@@ -174,6 +192,7 @@ import okhttp3.Response;
 public class SmilyChannelApiExample {
 
     public static void main(String[] args) throws IOException {
+        // Remember to replace `YOUR_TOKEN` and `API_URL` with your actual API token and URL
         String token = "YOUR_TOKEN";
         String apiURL = "API_URL";
         String mediaType = "application/vnd.api+json";
@@ -197,46 +216,7 @@ public class SmilyChannelApiExample {
         String responseBody = response.body().string();
         System.out.println("Response Body: " + responseBody);
     }
-}
-</code></pre>
-
-<p>Remember to replace <code>YOUR_TOKEN</code> and <code>API_URL</code> with your actual API token and URL. This Java code uses the OkHttp library to make HTTP requests, similar to how Excon and Faraday were used in the Ruby examples.</p>
-
-<p>Make sure you have the OkHttp library added to your Java project’s dependencies.</p>
-
-<p>Feel free to adapt this Java code to your project’s structure and error handling needs. This example demonstrates making a GET request, and you can build upon it for other types of requests as well.</p>
-
-<h3 id="code-example-in-python">Code example in Python</h3>
-
-<pre><code class="language-python">import requests
-
-token = "YOUR_TOKEN"
-api_url = "API_URL"
-media_type = "application/vnd.api+json"
-
-headers = {
-    "User-Agent": "Api client",
-    "Accept": media_type,
-    "Content-Type": media_type,
-    "Authorization": f"Bearer {token}"
-}
-
-response = requests.get(f"{api_url}/api/ota/v1/accounts", headers=headers)
-status_code = response.status_code
-
-print(f"Response Status Code: {status_code}")
-
-# You can further process the response content here if needed
-response_content = response.content
-print(f"Response Content: {response_content}")
-</code></pre>
-
-<p>Replace <code>YOUR_TOKEN</code> and <code>API_URL</code> with your actual API token and URL. This Python code uses the requests library to make HTTP requests, similar to how the Ruby examples used Excon and Faraday.</p>
-
-<p>Make sure you have the <code>requests</code> library installed in your Python environment:</p>
-
-<pre><code class="language-bash">pip install requests
-</code></pre>
+}</code></pre></div></div></div>
 
 <h3 id="understanding-api-responses">Understanding API Responses</h3>
 
