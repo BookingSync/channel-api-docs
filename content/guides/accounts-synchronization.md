@@ -31,6 +31,9 @@ curl -X GET \
   -H "Content-Type: application/vnd.api+json" \
   -H "Authorization: Bearer $TOKEN"
 ----ruby
+# Make sure you have the necessary functions
+# get_imported_accounts_ids, import_account, and disable_accounts_and_rentals defined.
+
 require 'excon'
 require 'json'
 
@@ -61,6 +64,9 @@ end
 accounts_for_disabling = already_import_accounts_ids - json["data"].pluck("id")
 disable_accounts_and_rentals(accounts_for_disabling) # Disable accounts
 ----python
+# Make sure you have the necessary functions
+# get_imported_accounts_ids, import_account, and disable_accounts_and_rentals defined.
+
 import requests
 
 token = "YOUR_TOKEN"
@@ -87,6 +93,9 @@ for account in json_data["data"]:
 accounts_for_disabling = [account_id for account_id in already_import_accounts_ids if account_id not in [a["id"] for a in json_data["data"]]]
 disable_accounts_and_rentals(accounts_for_disabling)  # Disable accounts
 ----java
+// Make sure you have the necessary
+// functions getImportedAccountIds, importAccount, and disableAccountsAndRentals defined.
+
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -164,7 +173,3 @@ public class AccountSynchronization {
     }
 }
 --end--
-
-Please replace `YOUR_TOKEN` and `API_URL` with your actual authentication token and API URL in the Python code.
-
-Additionally, make sure you have the necessary functions **get_imported_accounts_ids/getImportedAccountIds**, **import_account/importAccount**, and **disable_accounts_and_rentals/disableAccountsAndRentals** defined.
