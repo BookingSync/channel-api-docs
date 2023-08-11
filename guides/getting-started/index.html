@@ -108,13 +108,13 @@
 
 <p>Copy the following cURL example to make your first API call, which retrieves all <a href="https://demo.platforms.bookingsync.com/api-docs/index.html">accounts</a> interested in publishing listings on your website:</p>
 
-<pre><code class="language-bash">curl -i -X 'GET' '&lt;HOST&gt;/api/ota/v1/accounts' -H 'accept: application/vnd.api+json' -H 'Authorization: Bearer &lt;API_KEY&gt;'
+<pre><code class="language-bash">curl -i -X 'GET' 'HOST/api/ota/v1/accounts' -H 'accept: application/vnd.api+json' -H 'Authorization: Bearer API_KEY'
 </code></pre>
 
 <ol>
   <li>Copy the cURL example above.</li>
   <li>Paste the curl call into your favorite text editor.</li>
-  <li>Replace **<API_KEY>** with your actual API key and **<HOST>** with your host details.</HOST></API_KEY></li>
+  <li>Replace <strong>API_KEY</strong> with your actual API key and <strong>HOST</strong> with your host details.</li>
   <li>Copy the updated cURL command and paste it into your terminal.</li>
   <li>Press <strong>Enter</strong> to execute the request.</li>
   <li>A successful response with status <strong>HTTP/2 200</strong> indicates correct setup.</li>
@@ -126,8 +126,8 @@
 
 <pre><code class="language-ruby">require 'excon'
 
-token = "&lt;YOUR_TOKEN&gt;"
-api_url = "&lt;API_URL&gt;"
+token = "YOUR_TOKEN"
+api_url = "API_URL"
 media_type = "application/vnd.api+json"
 options = {
   headers: {
@@ -147,8 +147,8 @@ response.status
 
 <pre><code class="language-ruby">require 'faraday'
 
-token = "&lt;YOUR_TOKEN&gt;"
-api_url = "&lt;API_URL&gt;"
+token = "YOUR_TOKEN"
+api_url = "API_URL"
 media_type = "application/vnd.api+json"
 
 request = Faraday.new({ ssl: { verify: true } }) do |f|
@@ -174,8 +174,8 @@ import okhttp3.Response;
 public class SmilyChannelApiExample {
 
     public static void main(String[] args) throws IOException {
-        String token = "&lt;YOUR_TOKEN&gt;";
-        String apiURL = "&lt;API_URL&gt;";
+        String token = "YOUR_TOKEN";
+        String apiURL = "API_URL";
         String mediaType = "application/vnd.api+json";
 
         OkHttpClient client = new OkHttpClient();
@@ -200,7 +200,7 @@ public class SmilyChannelApiExample {
 }
 </code></pre>
 
-<p>Remember to replace <code>&lt;YOUR_TOKEN&gt;</code> and <code>&lt;API_URL&gt;</code> with your actual API token and URL. This Java code uses the OkHttp library to make HTTP requests, similar to how Excon and Faraday were used in the Ruby examples.</p>
+<p>Remember to replace <code>YOUR_TOKEN</code> and <code>API_URL</code> with your actual API token and URL. This Java code uses the OkHttp library to make HTTP requests, similar to how Excon and Faraday were used in the Ruby examples.</p>
 
 <p>Make sure you have the OkHttp library added to your Java project’s dependencies.</p>
 
@@ -210,8 +210,8 @@ public class SmilyChannelApiExample {
 
 <pre><code class="language-python">import requests
 
-token = "&lt;YOUR_TOKEN&gt;"
-api_url = "&lt;API_URL&gt;"
+token = "YOUR_TOKEN"
+api_url = "API_URL"
 media_type = "application/vnd.api+json"
 
 headers = {
@@ -231,7 +231,7 @@ response_content = response.content
 print(f"Response Content: {response_content}")
 </code></pre>
 
-<p>Replace <code>&lt;YOUR_TOKEN&gt;</code> and <code>&lt;API_URL&gt;</code> with your actual API token and URL. This Python code uses the requests library to make HTTP requests, similar to how the Ruby examples used Excon and Faraday.</p>
+<p>Replace <code>YOUR_TOKEN</code> and <code>API_URL</code> with your actual API token and URL. This Python code uses the requests library to make HTTP requests, similar to how the Ruby examples used Excon and Faraday.</p>
 
 <p>Make sure you have the <code>requests</code> library installed in your Python environment:</p>
 

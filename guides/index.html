@@ -104,13 +104,16 @@
 
 <p>The Smily Channel API is designed to synchronize account data, rentals, and facilitate bookings between Smily Channel and our partners’ platforms. Below is a detailed step-by-step guide on how to utilize our API for a seamless synchronization process.</p>
 
-<h4 id="fetching-accounts">1. Fetching Accounts</h4>
+<p><a href="/images/integration_flow.png" target="_blank"><img src="/images/integration_flow.png" /></a></p>
 
-<p>The first step to integration is to fetch the list of accounts interested in publishing their listings on your platform. You can do this by making a GET request to the <code>/accounts</code> endpoint. It’s recommended to perform this operation regularly to keep the accounts data up-to-date.</p>
+<h4 id="activation">1. Activation</h4>
 
-<h4 id="accounts-onboarding">2. Accounts Onboarding</h4>
+<p>Begin by requesting a demo account from the <a href="mailto:partners@smily.com">Smily Partners Team</a>. This account will grant you access to the API.</p>
 
-<p>After fetching the accounts, the next step is to onboard them. This process involves signing contracts, registering them in your system, and performing any other necessary setup operations.</p>
+<h4 id="accounts-onboarding">2. Accounts onboarding</h4>
+
+<p>The second step to integration is to fetch the list of accounts interested in publishing their listings on your platform. You can do this by making a GET request to the <code>/accounts</code> endpoint. It’s recommended to perform this operation regularly to keep the accounts data up-to-date.
+After fetching the accounts, the next step is to onboard them. This process involves signing contracts, registering them in your system, and performing any other necessary setup operations.</p>
 
 <h4 id="fetching-rental-information">3. Fetching Rental Information</h4>
 
@@ -134,17 +137,22 @@
 
 <h4 id="booking-creation">4. Booking Creation</h4>
 
-<p>When a customer makes a booking request on your platform, the following steps need to be followed:</p>
+<p>When a customer submits a booking request on your platform, start by verifying the price and availability for the desired rental. Achieve this by initiating a POST request to the <code>/quotes</code> endpoint. The response will provide you with the confirmed price and availability status.
+The response also includes a <code>Booking URL</code>. If you wish to process payments through the Smily Payment Gateway, simply redirect the guest to this URL. If not, proceed to the next step.</p>
 
-<p><strong>4.1 Create a Quote</strong></p>
+<h4 id="confirm-booking-with-payment">5. Confirm Booking with Payment</h4>
 
-<p>First, confirm the price and availability of the chosen rental by creating a quote. You can do this by making a POST request to the <code>/quotes</code> endpoint. The response will provide you with the confirmed price and availability status.</p>
+<p>The following steps are necessary if parner wishes to use own payment gateway:</p>
 
-<p><strong>4.2 Create a Booking</strong></p>
+<p><strong>5.1 Create a Booking</strong></p>
 
 <p>If the rental is available, proceed to create a booking. Make a POST request to the <code>/bookings</code> endpoint with a price not less than the one provided in the quote response.</p>
 
-<p><strong>4.3 Confirm Booking with Payment</strong></p>
+<p><strong>5.2 Process the payment</strong></p>
+
+<p>The partner manages and completes the payment process on their end.</p>
+
+<p><strong>5.3 Store the Payment</strong></p>
 
 <p>Lastly, confirm the booking by making a payment. You can do this by sending a POST request to the <code>/payments</code> endpoint. This final step ensures the booking is confirmed and the rental is successfully reserved for the customer.</p>
 
