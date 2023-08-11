@@ -206,7 +206,8 @@ curl -X POST \
       "client-last-name": "Piana",
       "client-email": "rich@piana.com",
       "client-phone-number": "123123123",
-      "client-country-code": "US"
+      "client-country-code": "US",
+      "channel-commission": "10.0"
     },
     "type": "bookings"
   }
@@ -240,7 +241,8 @@ payload = {
       "client-last-name": "Piana",
       "client-email": "rich@piana.com",
       "client-phone-number": "123123123",
-      "client-country-code": "US"
+      "client-country-code": "US",
+      "channel-commission": "10.0"
     },
     type: "bookings"
   }
@@ -292,7 +294,8 @@ payload = {
             "client-last-name": "Piana",
             "client-email": "rich@piana.com",
             "client-phone-number": "123123123",
-            "client-country-code": "US"
+            "client-country-code": "US",
+            "channel-commission": "10.0"
         },
         "type": "bookings"
     }
@@ -340,7 +343,8 @@ public class BookingCreation {
                 .put("client-last-name", "Piana")
                 .put("client-email", "rich@piana.com")
                 .put("client-phone-number", "123123123")
-                .put("client-country-code", "US");
+                .put("client-country-code", "US")
+                .put("channel-commission", "10.0");
 
         JSONObject payload = new JSONObject()
                 .put("data", new JSONObject()
@@ -379,6 +383,7 @@ public class BookingCreation {
 }
 --end--
 
+> **Note:** Please ensure you correctly set the partner's commission in the `channel-commission` field of the payload.
 
 > **Important:** Every booking has a tentative-expires-at field, which is set to expire 10 minutes after the booking's creation. If no payment is made within this window, the booking will be automatically canceled by our system. This duration can be extended upon request.
 
