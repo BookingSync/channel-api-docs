@@ -7,6 +7,8 @@
 
 The Booking Cancellation API allows you to cancel bookings according to the rental's cancellation policy. The cancellation policy can be retrieved from the rental's endpoint and includes details such as eligible cancellation days and penalty percentages.
 
+> **Please note** that PMs can't make cancellations directly in the Smily system so the cancellation has to be made by your channel.
+
 ~~~js
   "cancelation-policy-items": [
     {
