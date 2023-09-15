@@ -34,6 +34,15 @@ compile '/guides/*' do
   layout item[:layout] || 'guides'
 end
 
+compile '/channel-api-support' do
+  filter :erb
+  filter :bootstrap_tab
+  filter :kramdown, toc_levels: [2], header_offset: 1, enable_coderay: false
+
+  # filter :colorize_syntax, default_colorizer: :pygmentsrb
+  layout item[:layout] || 'support'
+end
+
 compile %r{/assets/(stylesheets|javascripts)/.+/} do
   filter :sprockets, {
     :css_compressor => :scss,
