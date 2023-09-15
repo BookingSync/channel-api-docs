@@ -30,7 +30,7 @@ In essence, the Smily Channel API provides a straightforward and speedy integrat
 
 The Smily Channel API is designed to synchronize account data, rentals, and facilitate bookings between Smily Channel and our partners’ platforms. Below is a detailed step-by-step guide on how to utilize our API for a seamless synchronization process.
 
-<a href="/images/integration_flow.png" target="_blank"><img src="/images/integration_flow.png" /></a>
+<a href="/images/integration_flow.png" target="_blank"><img style="width: 100%" src="/images/integration_flow.png" /></a>
 
 ### 1. Activation
 
