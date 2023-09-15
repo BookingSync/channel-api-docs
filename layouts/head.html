@@ -35,8 +35,11 @@
 
           <div class="collapse navbar-collapse" id="navigation">
             <ul class="nav navbar-nav navbar-right">
-              <li class="<%= "active" if @item_rep.path.start_with?("/guides/") %>">
+              <li class="<%= "active" if @item_rep.path.start_with?("/guides/") && !@item_rep.path.start_with?("/guides/channel-api-support") %>">
                 <a href="/guides/">Guides</a>
+              </li>
+              <li class="<%= " active" if @item_rep.path.start_with?("/guides/channel-api-support") %>">
+                <a href="/guides/channel-api-support">Channel API support</a>
               </li>
               <li class="<%= "active" if @item_rep.path.start_with?("/reference/") %>">
                 <a href="https://demo.platforms.bookingsync.com/api-docs/index.html" target="_blank">API Reference</a>
