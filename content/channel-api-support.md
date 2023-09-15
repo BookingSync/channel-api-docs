@@ -1,5 +1,7 @@
 # How to get support for Channel API?
 
+<p style="margin-top:0px;">&nbsp;</p>
+
 You can create a Channel API support request by filling [this form](https://apisupport.bookingsync.com/get-some-help-from-our-channel-api-support-team) to create a ticket or directly from Slack in the dedicated channel you have with Smily.
 
 Please only submit your request through one of those channels.
