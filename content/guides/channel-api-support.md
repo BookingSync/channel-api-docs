@@ -32,8 +32,11 @@ To submit your request by Slack, simply proceed by following these steps: ✍️
 
     [![acknowledged](/images/support/image3.png "acknowledged")](/images/support/image3.png)
 
-    > The acknowledged button is to be clicked by the Smily team. In case you have clicked on it by accident, just submit another support form.
+    The acknowledged button is to be clicked by the Smily team. In case you have clicked on it by accident, just submit another support form.
 
 8. That’s it! Our support team will take it from there and will keep you informed in the thread of the resolution of the issue. 🥳
 
+
+<p style="margin-top:30px">
 If you have any questions, you can contact your Partnership Manager at <a href="mailto:partners@smily.com">partners@smily.com</a>
+</p>
