@@ -155,6 +155,8 @@ public class AccountSynchronization {
 }
 --end--
 
+> **Note:**: By default, we do not include rentals that are not instantly bookable in the API response, but we can include them upon request.
+
 ## Fetching Rental Availabilities
 
 Availability is a just a rental field (see [Rental Schema](https://demo.platforms.bookingsync.com/api-docs/index.html)). But it makes sense to sync availabilities more often than other information.

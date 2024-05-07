@@ -1,3 +1,5 @@
+require "guard"
+require "guard/compat/test/helper"
 guard 'bundler' do
   watch('Gemfile')
 end

@@ -1,15 +1,22 @@
-# Booking and Payment Handling
+# Understanding Request to Book
 
 1. TOC
 {:toc}
 
 ## Preface
 
-This document outlines the process of handling payments on the partner's side. While we offer the option to use the Smily payment gateway, this guide focuses on managing payments directly through the partner's infrastructure.
+A "Request to Book" is similar to a regular booking, but with one important difference: the Property Manager (PM) must confirm the booking before the guest pays.
+
+The process of creating a request to book is quite similar to making a regular booking. You'll use the same API for both. However, if the rental's `instantly_bookable` attribute is set to false, it will automatically become a request to book.
+
+> **Important:** By default, we only show rentals that can be booked instantly. However, this can be changed upon request.
+
+
+<a href="/images/request_to_book_flow.png" target="_blank"><img style="width: 100%" src="/images/request_to_book_flow.png" /></a>
 
 ## Quote creation
 
-Before proceeding with booking creation, it's necessary to confirm rental price and availability by generating a quote.
+To start the booking request creation process, it's necessary to confirm rental price and availability by generating a quote.
 
 | cURL | Ruby | Python | Java |
 ----bash
@@ -176,7 +183,7 @@ public class CreateQuote {
 
 ## Booking creation
 
-Once a successful quote is obtained, initiate a booking request by providing client details, rental information, and pricing.
+Once we have a successful quote, it's time to initiate a "Request to Book" by providing client details, rental information, and pricing.
 
 > Note: Ensure that the provided price matches or higher than `final-price` from the quote.
 
@@ -385,15 +392,131 @@ public class BookingCreation {
 
 > **Note:** Please ensure you correctly set the partner's commission in the `channel-commission` field of the payload.
 
-> **Important:** By default, we create tentative bookings, and if payment is not received within some period, the booking will be automatically canceled. Each booking includes a 'tentative-expires-at' field, indicating the time at which the booking will expire. The duration of this period varies depending on the rental settings. For instantly bookable rentals, this period is 10 minutes but can be extended upon request. For rentals that are not instantly bookable, the period is 72 hours.
-
-> **Additionally:**: By default, we do not include rentals that are not instantly bookable in the API response, but we can include them upon request.
+> **Important:**: Make sure to check that the booking attributes show "booked: false" and "request_to_book: true".
 
 We strongly recommend setting the `Idempotency-Key` header to prevent duplicate creations. Generate a UUID for each order and use it as the `Idempotency-Key`.
 
 For example, if you attempt to create a booking but encounter a network connection issue or another error that prevents you from receiving a response, you can safely retry your request. This is possible because, for a specific key, each successful response will be cached for a 6 hours.
 
+## Wait for Property Manager Confirmation
+
+Now, we wait for the Property Manager (PM) to confirm the booking. We can do this by fetching the booking details using the GET `/api/ota/v1/bookings/{id}`. The PM will have up to 3 days to confirm the booking. Once confirmed, the booking status will change to "booked."
+
+> **Note:** If your platform allows property managers to confirm bookings, you can skip this step. Once the booking is confirmed by the property manager on your platform, you can simply create a payment to notify us that the booking is confirmed.
+
+
+| cURL | Ruby | Python | Java |
+----bash
+TOKEN="YOUR_TOKEN"
+API_URL="API_URL"
+BOOKING_ID="BOOKING_ID"
+
+curl -X GET \
+  "$API_URL/api/ota/v1/bookings/$BOOKING_ID" \
+  -H "User-Agent: API Client" \
+  -H "Accept: application/vnd.api+json" \
+  -H "Content-Type: application/vnd.api+json" \
+  -H "Authorization: Bearer $TOKEN"
+----ruby
+# Make sure you have the necessary functions
+# get_imported_accounts_ids, import_account, and disable_accounts_and_rentals defined.
+
+require 'excon'
+require 'json'
+
+token = "YOUR_TOKEN"
+api_url = "API_URL"
+booking_id = 1111
+media_type = "application/vnd.api+json"
+options = {
+  headers: {
+    "User-Agent" => "Api client",
+    "Accept" => media_type,
+    "Content-Type" => media_type,
+    "Authorization" => "Bearer #{token}"
+  }
+}
+request = Excon.new(URI.join(api_url, "/api/ota/v1/bookings/#{booking_id}").to_s, options)
+response = request.request(method: :get)
+
+response.status
+
+json = JSON.parse(response.body)
+booked = json["data"]["attributes"]["booked"]
+
+----python
+# Make sure you have the necessary functions
+# get_imported_accounts_ids, import_account, and disable_accounts_and_rentals defined.
+
+import requests
+
+token = "YOUR_TOKEN"
+api_url = "API_URL"
+booking_id = 1111
+media_type = "application/vnd.api+json"
+headers = {
+    "User-Agent": "API Client",
+    "Accept": media_type,
+    "Content-Type": media_type,
+    "Authorization": f"Bearer {token}"
+}
+response = requests.get(f"{api_url}/api/ota/v1/bookings/{booking_id}", headers=headers)
+
+response_status = response.status_code
+
+json_data = response.json()
+booked = json_data["data]["attributes"]["booked"]
+
+----java
+// Make sure you have the necessary
+// functions getImportedAccountIds, importAccount, and disableAccountsAndRentals defined.
+
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+public class AccountSynchronization {
+
+    public static void main(String[] args) {
+        String token = "YOUR_TOKEN";
+        String api_url = "API_URL";
+        String booking_id = "1111";
+        MediaType mediaType = MediaType.parse("application/vnd.api+json");
+
+        OkHttpClient client = new OkHttpClient();
+
+        Request request = new Request.Builder()
+                .url(api_url + "/api/ota/v1/bookings/" + booking_id)
+                .addHeader("User-Agent", "API Client")
+                .addHeader("Accept", mediaType.toString())
+                .addHeader("Content-Type", mediaType.toString())
+                .addHeader("Authorization", "Bearer " + token)
+                .build();
+
+        try {
+            Response response = client.newCall(request).execute();
+            int responseStatus = response.code();
+
+            JSONObject responseBody = new JSONObject(response.body().string());
+            JSONArray bookingAttributes = responseBody.getJSONArray("data").getJSONObject("attributes");
+
+            ...
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+}
+--end--
+
 ## Payment creation
+
+After the booking is confirmed, it's time to create a payment. The partner (Property Manager) will notify the guest about the confirmed booking and request payment. Once the guest makes the payment, we need to be notified. If the payment is successful, we'll receive a notification via the POST `/api/ota/v1/payments`. If the guest doesn't make the payment, we'll need to cancel the booking using the PATCH `/api/ota/v1/bookings/{id}/cancel`.
+
+Following these steps ensures a smooth process from creating a quote to confirming the booking and handling payments. If you have any questions or need further assistance, feel free to reach out. Happy booking!
 
 Once payment for the booking is processed, notify us to prevent booking cancellation.
 
