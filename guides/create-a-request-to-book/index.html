@@ -63,9 +63,9 @@
           <a class="list-group-item" href="/guides/getting-started/">Getting Started</a>
           <a class="list-group-item" href="/guides/accounts-synchronization/">Accounts synchronization</a>
           <a class="list-group-item" href="/guides/rentals-synchronization/">Rentals synchronization</a>
-          <a class="list-group-item active" href="/guides/create-a-booking-payments-on-partner-side/">Create a booking (payments on partner side)</a>
+          <a class="list-group-item" href="/guides/create-a-booking-payments-on-partner-side/">Create a booking (payments on partner side)</a>
           <a class="list-group-item" href="/guides/create-a-booking-with-smily-payment-gateway/">Create a booking (payments on our side)</a>
-          <a class="list-group-item" href="/guides/create-a-request-to-book/">Create request to book</a>
+          <a class="list-group-item active" href="/guides/create-a-request-to-book/">Create request to book</a>
           <a class="list-group-item" href="/guides/booking-cancelation/">Booking cancelation</a>
         </div>
       </div>
@@ -73,22 +73,31 @@
     <div class="col-md-9 col-md-pull-3">
       <div class="panel panel-default">
         <div class="panel-body guide-body">
-          <h2 id="booking-and-payment-handling">Booking and Payment Handling</h2>
+          <h2 id="understanding-request-to-book">Understanding Request to Book</h2>
 
 <ol id="markdown-toc">
   <li><a href="#preface" id="markdown-toc-preface">Preface</a></li>
   <li><a href="#quote-creation" id="markdown-toc-quote-creation">Quote creation</a></li>
   <li><a href="#booking-creation" id="markdown-toc-booking-creation">Booking creation</a></li>
+  <li><a href="#wait-for-property-manager-confirmation" id="markdown-toc-wait-for-property-manager-confirmation">Wait for Property Manager Confirmation</a></li>
   <li><a href="#payment-creation" id="markdown-toc-payment-creation">Payment creation</a></li>
 </ol>
 
 <h3 id="preface">Preface</h3>
 
-<p>This document outlines the process of handling payments on the partner’s side. While we offer the option to use the Smily payment gateway, this guide focuses on managing payments directly through the partner’s infrastructure.</p>
+<p>A “Request to Book” is similar to a regular booking, but with one important difference: the Property Manager (PM) must confirm the booking before the guest pays.</p>
+
+<p>The process of creating a request to book is quite similar to making a regular booking. You’ll use the same API for both. However, if the rental’s <code>instantly_bookable</code> attribute is set to false, it will automatically become a request to book.</p>
+
+<blockquote>
+  <p><strong>Important:</strong> By default, we only show rentals that can be booked instantly. However, this can be changed upon request.</p>
+</blockquote>
+
+<p><a href="/images/request_to_book_flow.png" target="_blank"><img style="width: 100%" src="/images/request_to_book_flow.png" /></a></p>
 
 <h3 id="quote-creation">Quote creation</h3>
 
-<p>Before proceeding with booking creation, it’s necessary to confirm rental price and availability by generating a quote.</p>
+<p>To start the booking request creation process, it’s necessary to confirm rental price and availability by generating a quote.</p>
 
 <div class="tabbable"><ul class="nav nav-tabs"><li class="active"><a data-toggle="tab" href="#content-1-0">cURL</a></li>
 <li class=""><a data-toggle="tab" href="#content-1-1">Ruby</a></li>
@@ -252,7 +261,7 @@ public class CreateQuote {
 
 <h3 id="booking-creation">Booking creation</h3>
 
-<p>Once a successful quote is obtained, initiate a booking request by providing client details, rental information, and pricing.</p>
+<p>Once we have a successful quote, it’s time to initiate a “Request to Book” by providing client details, rental information, and pricing.</p>
 
 <blockquote>
   <p>Note: Ensure that the provided price matches or higher than <code>final-price</code> from the quote.</p>
@@ -463,25 +472,135 @@ public class BookingCreation {
 </blockquote>
 
 <blockquote>
-  <p><strong>Important:</strong> By default, we create tentative bookings, and if payment is not received within some period, the booking will be automatically canceled. Each booking includes a ‘tentative-expires-at’ field, indicating the time at which the booking will expire. The duration of this period varies depending on the rental settings. For instantly bookable rentals, this period is 10 minutes but can be extended upon request. For rentals that are not instantly bookable, the period is 72 hours.</p>
-</blockquote>
-
-<blockquote>
-  <p><strong>Additionally:</strong>: By default, we do not include rentals that are not instantly bookable in the API response, but we can include them upon request.</p>
+  <p><strong>Important:</strong>: Make sure to check that the booking attributes show “booked: false” and “request_to_book: true”.</p>
 </blockquote>
 
 <p>We strongly recommend setting the <code>Idempotency-Key</code> header to prevent duplicate creations. Generate a UUID for each order and use it as the <code>Idempotency-Key</code>.</p>
 
 <p>For example, if you attempt to create a booking but encounter a network connection issue or another error that prevents you from receiving a response, you can safely retry your request. This is possible because, for a specific key, each successful response will be cached for a 6 hours.</p>
 
-<h3 id="payment-creation">Payment creation</h3>
+<h3 id="wait-for-property-manager-confirmation">Wait for Property Manager Confirmation</h3>
 
-<p>Once payment for the booking is processed, notify us to prevent booking cancellation.</p>
+<p>Now, we wait for the Property Manager (PM) to confirm the booking. We can do this by fetching the booking details using the GET <code>/api/ota/v1/bookings/{id}</code>. The PM will have up to 3 days to confirm the booking. Once confirmed, the booking status will change to “booked.”</p>
+
+<blockquote>
+  <p><strong>Note:</strong> If your platform allows property managers to confirm bookings, you can skip this step. Once the booking is confirmed by the property manager on your platform, you can simply create a payment to notify us that the booking is confirmed.</p>
+</blockquote>
 
 <div class="tabbable"><ul class="nav nav-tabs"><li class="active"><a data-toggle="tab" href="#content-3-0">cURL</a></li>
 <li class=""><a data-toggle="tab" href="#content-3-1">Ruby</a></li>
 <li class=""><a data-toggle="tab" href="#content-3-2">Python</a></li>
 <li class=""><a data-toggle="tab" href="#content-3-3">Java</a></li></ul><div class="tab-content"><div id="content-3-0" class="tab-pane fade in active"><pre><code class="language-bash">TOKEN="YOUR_TOKEN"
+API_URL="API_URL"
+BOOKING_ID="BOOKING_ID"
+
+curl -X GET \
+  "$API_URL/api/ota/v1/bookings/$BOOKING_ID" \
+  -H "User-Agent: API Client" \
+  -H "Accept: application/vnd.api+json" \
+  -H "Content-Type: application/vnd.api+json" \
+  -H "Authorization: Bearer $TOKEN"</code></pre></div>
+<div id="content-3-1" class="tab-pane fade in "><pre><code class="language-ruby"># Make sure you have the necessary functions
+# get_imported_accounts_ids, import_account, and disable_accounts_and_rentals defined.
+
+require 'excon'
+require 'json'
+
+token = "YOUR_TOKEN"
+api_url = "API_URL"
+booking_id = 1111
+media_type = "application/vnd.api+json"
+options = {
+  headers: {
+    "User-Agent" =&gt; "Api client",
+    "Accept" =&gt; media_type,
+    "Content-Type" =&gt; media_type,
+    "Authorization" =&gt; "Bearer #{token}"
+  }
+}
+request = Excon.new(URI.join(api_url, "/api/ota/v1/bookings/#{booking_id}").to_s, options)
+response = request.request(method: :get)
+
+response.status
+
+json = JSON.parse(response.body)
+booked = json["data"]["attributes"]["booked"]</code></pre></div>
+<div id="content-3-2" class="tab-pane fade in "><pre><code class="language-python"># Make sure you have the necessary functions
+# get_imported_accounts_ids, import_account, and disable_accounts_and_rentals defined.
+
+import requests
+
+token = "YOUR_TOKEN"
+api_url = "API_URL"
+booking_id = 1111
+media_type = "application/vnd.api+json"
+headers = {
+    "User-Agent": "API Client",
+    "Accept": media_type,
+    "Content-Type": media_type,
+    "Authorization": f"Bearer {token}"
+}
+response = requests.get(f"{api_url}/api/ota/v1/bookings/{booking_id}", headers=headers)
+
+response_status = response.status_code
+
+json_data = response.json()
+booked = json_data["data]["attributes"]["booked"]</code></pre></div>
+<div id="content-3-3" class="tab-pane fade in "><pre><code class="language-java">// Make sure you have the necessary
+// functions getImportedAccountIds, importAccount, and disableAccountsAndRentals defined.
+
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+public class AccountSynchronization {
+
+    public static void main(String[] args) {
+        String token = "YOUR_TOKEN";
+        String api_url = "API_URL";
+        String booking_id = "1111";
+        MediaType mediaType = MediaType.parse("application/vnd.api+json");
+
+        OkHttpClient client = new OkHttpClient();
+
+        Request request = new Request.Builder()
+                .url(api_url + "/api/ota/v1/bookings/" + booking_id)
+                .addHeader("User-Agent", "API Client")
+                .addHeader("Accept", mediaType.toString())
+                .addHeader("Content-Type", mediaType.toString())
+                .addHeader("Authorization", "Bearer " + token)
+                .build();
+
+        try {
+            Response response = client.newCall(request).execute();
+            int responseStatus = response.code();
+
+            JSONObject responseBody = new JSONObject(response.body().string());
+            JSONArray bookingAttributes = responseBody.getJSONArray("data").getJSONObject("attributes");
+
+            ...
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+}</code></pre></div></div></div>
+
+<h3 id="payment-creation">Payment creation</h3>
+
+<p>After the booking is confirmed, it’s time to create a payment. The partner (Property Manager) will notify the guest about the confirmed booking and request payment. Once the guest makes the payment, we need to be notified. If the payment is successful, we’ll receive a notification via the POST <code>/api/ota/v1/payments</code>. If the guest doesn’t make the payment, we’ll need to cancel the booking using the PATCH <code>/api/ota/v1/bookings/{id}/cancel</code>.</p>
+
+<p>Following these steps ensures a smooth process from creating a quote to confirming the booking and handling payments. If you have any questions or need further assistance, feel free to reach out. Happy booking!</p>
+
+<p>Once payment for the booking is processed, notify us to prevent booking cancellation.</p>
+
+<div class="tabbable"><ul class="nav nav-tabs"><li class="active"><a data-toggle="tab" href="#content-4-0">cURL</a></li>
+<li class=""><a data-toggle="tab" href="#content-4-1">Ruby</a></li>
+<li class=""><a data-toggle="tab" href="#content-4-2">Python</a></li>
+<li class=""><a data-toggle="tab" href="#content-4-3">Java</a></li></ul><div class="tab-content"><div id="content-4-0" class="tab-pane fade in active"><pre><code class="language-bash">TOKEN="YOUR_TOKEN"
 API_URL="API_URL"
 IDEMPOTENCY_UUID="IDEMPOTENCY_UUID"
 BOOKING_ID=1111
@@ -504,7 +623,7 @@ curl -X POST "$API_URL/api/ota/v1/payments" \
       "type": "payments"
     }
   }'</code></pre></div>
-<div id="content-3-1" class="tab-pane fade in "><pre><code class="language-ruby">token = "YOUR_TOKEN"
+<div id="content-4-1" class="tab-pane fade in "><pre><code class="language-ruby">token = "YOUR_TOKEN"
 api_url = "API_URL"
 media_type = "application/vnd.api+json"
 options = {
@@ -542,7 +661,7 @@ if response.status == 201
 else
   handle_errors(json)
 end</code></pre></div>
-<div id="content-3-2" class="tab-pane fade in "><pre><code class="language-python">import requests
+<div id="content-4-2" class="tab-pane fade in "><pre><code class="language-python">import requests
 import json
 import uuid
 
@@ -582,7 +701,7 @@ if response.status_code == 201:
     # Save the payment ID for reference
 else:
     print(f"Handle errors: {response.text}")</code></pre></div>
-<div id="content-3-3" class="tab-pane fade in "><pre><code class="language-java">import okhttp3.*;
+<div id="content-4-3" class="tab-pane fade in "><pre><code class="language-java">import okhttp3.*;
 import org.json.JSONObject;
 
 import java.io.IOException;

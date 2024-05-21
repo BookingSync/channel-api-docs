@@ -65,6 +65,7 @@
           <a class="list-group-item active" href="/guides/rentals-synchronization/">Rentals synchronization</a>
           <a class="list-group-item" href="/guides/create-a-booking-payments-on-partner-side/">Create a booking (payments on partner side)</a>
           <a class="list-group-item" href="/guides/create-a-booking-with-smily-payment-gateway/">Create a booking (payments on our side)</a>
+          <a class="list-group-item" href="/guides/create-a-request-to-book/">Create request to book</a>
           <a class="list-group-item" href="/guides/booking-cancelation/">Booking cancelation</a>
         </div>
       </div>
@@ -233,6 +234,10 @@ public class AccountSynchronization {
         // Implement your logic to import rentals
     }
 }</code></pre></div></div></div>
+
+<blockquote>
+  <p><strong>Note:</strong>: By default, we do not include rentals that are not instantly bookable in the API response, but we can include them upon request.</p>
+</blockquote>
 
 <h3 id="fetching-rental-availabilities">Fetching Rental Availabilities</h3>
 
