@@ -402,7 +402,7 @@ For example, if you attempt to create a booking but encounter a network connecti
 
 Now, we wait for the Property Manager (PM) to confirm the booking. We can do this by fetching the booking details using the GET `/api/ota/v1/bookings/{id}`. The PM will have up to 3 days to confirm the booking. Once confirmed, the booking status will change to "booked."
 
-> **Note:** If your platform allows property managers to confirm bookings, you can skip this step. Once the booking is confirmed by the property manager on your platform, you can simply create a payment to notify us that the booking is confirmed.
+> **Note:** If your platform allows property managers to confirm bookings, you still need to check the status from our side. However, if the confirmation comes from your side, you can simply create a payment to notify us that the booking is confirmed.
 
 
 | cURL | Ruby | Python | Java |
