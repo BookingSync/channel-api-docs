@@ -214,3 +214,5 @@ public class CancelBooking {
     }
 }
 --end--
+
+> **Note:** When cancelling a booking, it is essential to handle the `channel-cancelation-cost` attribute correctly to ensure the proper amount is charged or refunded to the guest.<br> `Channel-cancelation-cost` is **0**. means the partner does not want to charge the guest, and the cancellation is free.<br>`Channel-cancelation-cost` is **not 0**: indicates that the partner wants to charge the guest a certain amount as a cancellation fee.
