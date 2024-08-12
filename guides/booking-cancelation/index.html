@@ -292,6 +292,10 @@ public class CancelBooking {
     }
 }</code></pre></div></div></div>
 
+<blockquote>
+  <p><strong>Note:</strong> When cancelling a booking, it is essential to handle the <code>channel-cancelation-cost</code> attribute correctly to ensure the proper amount is charged or refunded to the guest.<br /> <code>Channel-cancelation-cost</code> is <strong>0</strong>. means the partner does not want to charge the guest, and the cancellation is free.<br /><code>Channel-cancelation-cost</code> is <strong>not 0</strong>: indicates that the partner wants to charge the guest a certain amount as a cancellation fee.</p>
+</blockquote>
+
         </div>
       </div>
     </div>
